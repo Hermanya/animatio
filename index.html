@@ -1,0 +1,273 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <style>
+  body {
+    margin: 0px;
+    padding: 0px;
+    background: #2B364A;
+  }
+  </style>
+</head>
+<body>
+  <canvas id="myCanvas" width="900" height="920"></canvas>
+  <script>
+  var canvas = document.getElementById('myCanvas');
+  var context = canvas.getContext('2d');
+
+  context.scale(2,2);
+  context.translate(canvas.width/4, canvas.height/2);
+  context.rotate(-Math.PI/2);
+  context.lineJoin = 'round';
+  context.lineCap = 'round';
+
+
+  var leftFoot = foot({
+    rotation: 0,
+    connectedTo: []
+  })
+
+  var leftCalf = calf({
+    rotation: Math.PI,
+    connectedTo: [leftFoot]
+  })
+
+  var leftThigh = thigh({
+    rotation: Math.PI/36*35,
+    connectedTo: [leftCalf]
+  })
+
+  var leftHip = hip({
+    rotation: Math.PI/4*3,
+    connectedTo: [leftThigh]
+  });
+
+
+
+  var head = {
+    width: 45,
+    length: 20,
+    rotation: 0
+  }
+
+  var neck = {
+    width: 30,
+    length: 65,
+    rotation: 0,
+    connectedTo: [head]
+  }
+
+  var leftArm = arm({isLeft: true})
+  var rightArm = arm({isRight: true})
+
+  var torso = {
+    width: 80,
+    length: 90,
+    rotation: 0,
+    connectedTo: [neck, leftArm, rightArm]
+  }
+
+
+  
+  var rightHip = hip({
+    rotation: Math.PI/4,
+    connectedTo: [torso, leftHip]
+  });
+
+  var rightThigh = thigh({
+    rotation: Math.PI/36,
+    connectedTo: [rightHip]
+  });
+
+  var rightCalf = calf({
+    rotation: 0,
+    connectedTo: [rightThigh]
+  });
+
+  var rightFoot = foot({
+    rotation: 0,
+    connectedTo: [rightCalf]
+  });
+
+  
+  function arm (options) {
+    var sign = options.isLeft ? 1 : -1;
+    return shoulder({
+      rotation: Math.PI/2.5*sign,
+      connectedTo: [upperArm({
+        rotation: Math.PI/36*35*sign,
+        connectedTo: [foreArm({
+          rotation: Math.PI/36*35*sign,
+          connectedTo: [palm({
+            rotation: Math.PI/36*35*sign,
+            connectedTo: []
+          })]
+        })]
+      })]
+    });
+  }
+
+  function palm (part) {
+    part.width = 35;
+    part.length = 10;
+    return part;
+  }
+
+  function foreArm (part) {
+    part.width = 25;
+    part.length = 65;
+    return part;
+  }
+
+  function upperArm (part) {
+    part.width = 30;
+    part.length = 65;
+    return part;
+  }
+
+  function shoulder (part) {
+    part.width = 35;
+    part.length = 50;
+    return part;
+  }
+
+  function hip (part) {
+    part.width = 50;
+    part.length = 40;
+    return part;
+  }
+
+  function thigh (part) {
+    part.width = 40;
+    part.length = 100;
+    return part;
+  }
+
+
+  function calf (part) {
+    part.width = 30;
+    part.length = 110;
+    return part;
+  }
+
+  function foot (part) {
+    part.width = 35;
+    part.length = 1;
+    return part;
+  }
+
+  function drawPart (part) {
+    var adjastedX = Math.cos(part.rotation)*part.length;
+    var adjastedY = Math.sin(part.rotation)*part.length;
+    context.lineWidth = part.width;
+    context.beginPath();
+    context.moveTo(0, 0);
+    context.lineTo(adjastedX, adjastedY);
+    context.lineTo(adjastedX, adjastedY);
+    context.translate(adjastedX, adjastedY);
+    context.lineTo(0, 0);
+    context.strokeStyle = 'rgba(108,243,213, 0.8)'
+    context.stroke();
+    (part.connectedTo || []).forEach(function (part) {
+      context.save();
+      drawPart(part);
+      context.restore();
+    });
+  }
+
+  var leftUpperArm = leftArm.connectedTo[0];
+  var leftForeArm = leftUpperArm.connectedTo[0];
+  var leftPalm = leftForeArm.connectedTo[0];
+  var rightForeArm = rightArm.connectedTo[0].connectedTo[0];
+  
+  firstStep()
+
+  function firstStep () {
+    if (leftUpperArm.rotation <= Math.PI/36*20) {
+      secondStep();
+    } else {
+      leftUpperArm.rotation -= Math.PI/72;
+      leftForeArm.rotation -= Math.PI/36;
+      leftPalm.rotation -= Math.PI/36;
+      draw()
+      window.requestAnimationFrame(firstStep)
+    }
+  }
+
+  function secondStep (argument) {
+    if (leftForeArm.rotation <= -Math.PI/36*4) {
+      thirdStep();
+    } else {
+      leftUpperArm.rotation -= Math.PI/72;
+      leftForeArm.rotation -= Math.PI/36;
+      leftPalm.rotation -= Math.PI/36;
+      draw()
+      window.requestAnimationFrame(secondStep)
+    }
+  }
+
+  function thirdStep (argument) {
+    if (leftForeArm.rotation >= Math.PI/36*4) {
+      fourthStep();
+    } else {
+      torso.rotation -= Math.PI/1080;
+      rightForeArm.rotation -= Math.PI/1080;
+      leftUpperArm.rotation -= Math.PI/260;
+      leftForeArm.rotation += Math.PI/100;
+      leftPalm.rotation += Math.PI/80;
+      draw()
+      window.requestAnimationFrame(thirdStep)
+    }
+  }
+
+  function fourthStep (argument) {
+    if (leftForeArm.rotation <= -Math.PI/36*4) {
+      thirdStep();
+    } else {
+      torso.rotation += Math.PI/1080;
+      rightForeArm.rotation += Math.PI/1080;
+      leftUpperArm.rotation += Math.PI/260;
+      leftForeArm.rotation -= Math.PI/100;
+      leftPalm.rotation -= Math.PI/80;
+      draw()
+
+      var chance = Math.random();
+      if (chance > 0.9) {
+        head.rotation += Math.PI / 360;
+      } else if (chance < 0.1) {
+        head.rotation -= Math.PI / 360;
+      }
+
+      chance = Math.random();
+      if (chance > 0.95) {
+        leftThigh.rotation += Math.PI / 720;
+      } else if (chance < 0.05) {
+        leftThigh.rotation -= Math.PI / 720;
+      }
+
+      chance = Math.random();
+      if (chance > 0.95) {
+        rightThigh.rotation += Math.PI / 720;
+      } else if (chance < 0.05) {
+        rightThigh.rotation -= Math.PI / 720;
+      }
+
+      window.requestAnimationFrame(fourthStep)
+    }
+  }
+
+
+  function draw () {
+    context.clearRect(0,-canvas.width/2,canvas.height,canvas.width)
+    context.save()
+    drawPart(rightFoot);
+    context.restore()
+  }
+
+
+  </script>
+  <audio src="Daft Punk - One More Time instrumental.mp3" autoplay loop>
+  <p>Your browser does not support the audio element </p>
+  </audio>
+</body>
+</html>      
