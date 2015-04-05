@@ -1,0 +1,33 @@
+{
+  "name": "human",
+  "version": "1.0.0",
+  "description": "silhouette theater",
+  "main": "index.js",
+  "dependencies": {
+    "react": "^0.13.1",
+    "react-tap-event-plugin": "^0.1.6",
+    "watchify": "^2.4.0",
+    "material-ui": "^0.7.3",
+    "reactify": "^1.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node_modules/watchify/bin/cmd.js -t [ reactify --es6 ] src/main.js -o index.js -d -v"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hermanya/one-more-time.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hermanya/one-more-time/issues"
+  },
+  "homepage": "https://github.com/Hermanya/one-more-time",
+  "browserify": {
+        "transform": [
+            ["reactify", {"es6": true}]
+        ]
+    }
+}
