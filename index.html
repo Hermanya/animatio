@@ -6,27 +6,88 @@
     margin: 0px;
     padding: 0px;
   }
+
+  #preview-container{
+    position: relative;
+  }
+
+  #preview {
+    display: block;
+  }
+
+  #play {
+    position: absolute;
+    bottom: 8px;
+    left: 24px;
+  }
+
   #steps {
     display: inline-block;
     float: left;
   }
   .step, #preview {
-      /*margin: 16px;*/
-      border: 1px solid black;
+    margin-top: 16px;
+    margin-left: 16px;
+    border: 2px solid black;
+    border-radius: 8px;
   }
+  #title {
+    margin-top: 16px;
+    margin-left: 16px;
+    padding-left: 8px;
+    border: 2px solid black;
+    border-radius: 8px;
+    background-color: transparent;
+    font-size: 1.2em;
+    text-transform: capitalize;
+  }
+
+  #add-step {
+    margin-top: 39px;
+    margin-left: 16px;
+  }
+
+  #done {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+  }
+
+
   button {
-    font-size: 2em;
+    font-size: 1.5em;
     border-radius: 50%;
+    background: none;
+    border: black 2px solid;
+    width: 2em;
+    height: 2em;
+    transition: 0.25s;
   }
+
+  button:hover {
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.25);
+  }
+
+  button:focus, input:focus {
+    outline: none;
+    border-color: rgba(0, 0, 0, 0.5) !important;
+  }
+  
   </style>
 </head>
 <body>
-  <canvas id="preview" width="640" height="480"></canvas>
+  <input type="text" placeholder="Enter title" value="initial title" id="title" autofocus>
+  <div id="preview-container">
+    <canvas id="preview" width="640" height="480"></canvas>
+    <button id="play">&triangleright;</button>
+  </div>
   <div>
     <div id="steps"></div>
     <button id="add-step">&plus;</button>
   </div>
-  <button id="play">&triangleright;</button>
+  <button id="done">&checkmark;</button>
+  <!-- <button id="disregard">&times;</button> -->
 
   <script>
   function random (array) {
@@ -35,7 +96,7 @@
 
   document.body.style.background = random([
     '#E6E477', '#F98A30', '#FEE266', '#AEF27F'
-  ]);
+    ]);
 
   var canvas = document.getElementById('preview');
   var context = canvas.getContext('2d');
@@ -43,308 +104,321 @@
   context.rotate(-Math.PI/2);
   context.translate(-canvas.height, canvas.width/2);
  // context.scale(2,2);
-  
-  context.lineJoin = 'round';
-  context.lineCap = 'round';
+
+ context.lineJoin = 'round';
+ context.lineCap = 'round';
 
 
-  var leftFoot = foot({
-    rotation: 0,
-    connectedTo: []
-  })
+ var leftFoot = foot({
+  rotation: 0,
+  connectedTo: []
+})
 
-  var leftCalf = calf({
-    rotation: Math.PI,
-    connectedTo: [leftFoot]
-  })
+ var leftCalf = calf({
+  rotation: Math.PI,
+  connectedTo: [leftFoot]
+})
 
-  var leftThigh = thigh({
-    rotation: Math.PI/36*35,
-    connectedTo: [leftCalf]
-  })
+ var leftThigh = thigh({
+  rotation: Math.PI/36*35,
+  connectedTo: [leftCalf]
+})
 
-  var leftHip = hip({
-    rotation: Math.PI/3,
-    connectedTo: [leftThigh]
-  });
-
-
-
-  var head = {
-    width: 45,
-    length: 20,
-    rotation: 0
-  }
-
-  var neck = {
-    width: 30,
-    length: 65,
-    rotation: 0,
-    connectedTo: [head]
-  }
-
-  var leftArm = arm({isLeft: true})
-  var rightArm = arm({isRight: true})
-
-  var torso = {
-    width: 80,
-    length: 110,
-    rotation: 0,
-    connectedTo: [neck, leftArm, rightArm]
-  }
+ var leftHip = hip({
+  rotation: Math.PI/3,
+  connectedTo: [leftThigh]
+});
 
 
-  
-  var rightHip = hip({
-    rotation: 2*Math.PI/3,
-    connectedTo: [torso, leftHip]
-  });
 
-  var rightThigh = thigh({
-    rotation: Math.PI/36,
-    connectedTo: [rightHip]
-  });
+ var head = {
+  name: 'head',
+  width: 45,
+  length: 20,
+  rotation: 0
+}
 
-  var rightCalf = calf({
-    rotation: 0,
-    connectedTo: [rightThigh]
-  });
+var neck = {
+  name: 'neck',
+  width: 30,
+  length: 65,
+  rotation: 0,
+  connectedTo: [head]
+}
 
-  var rightFoot = foot({
-    rotation: 0,
-    connectedTo: [rightCalf]
-  });
+var leftArm = arm({isLeft: true})
+var rightArm = arm({isRight: true})
 
-  
-  function arm (options) {
-    var sign = options.isLeft ? 1 : -1;
-    return shoulder({
-      rotation: Math.PI/2.5*sign,
-      connectedTo: [upperArm({
+var torso = {
+  name: 'torso',
+  width: 80,
+  length: 110,
+  rotation: 0,
+  connectedTo: [neck, leftArm, rightArm]
+}
+
+
+
+var rightHip = hip({
+  rotation: 2*Math.PI/3,
+  connectedTo: [torso, leftHip]
+});
+
+var rightThigh = thigh({
+  rotation: Math.PI/36,
+  connectedTo: [rightHip]
+});
+
+var rightCalf = calf({
+  rotation: 0,
+  connectedTo: [rightThigh]
+});
+
+var rightFoot = foot({
+  rotation: 0,
+  connectedTo: [rightCalf]
+});
+
+
+function arm (options) {
+  var sign = options.isLeft ? 1 : -1;
+  return shoulder({
+    rotation: Math.PI/2.5*sign,
+    connectedTo: [upperArm({
+      rotation: Math.PI/36*35*sign,
+      connectedTo: [foreArm({
         rotation: Math.PI/36*35*sign,
-        connectedTo: [foreArm({
+        connectedTo: [palm({
           rotation: Math.PI/36*35*sign,
-          connectedTo: [palm({
-            rotation: Math.PI/36*35*sign,
-            connectedTo: []
-          })]
+          connectedTo: []
         })]
       })]
-    });
+    })]
+  });
+}
+
+function palm (part) {
+  part.name = arguments.callee.name;
+
+  part.width = 36;
+  part.length = 10;
+  return part;
+}
+
+function foreArm (part) {
+  part.width = 25;
+  part.length = 65;
+  part.name = arguments.callee.name;
+
+  return part;
+}
+
+function upperArm (part) {
+  part.width = 30;
+  part.length = 65;
+  part.name = arguments.callee.name;
+
+  return part;
+}
+
+function shoulder (part) {
+  part.name = arguments.callee.name;
+
+  part.width = 35;
+  part.length = 50;
+  return part;
+}
+
+function hip (part) {
+  part.name = arguments.callee.name;
+  part.width = 45;
+  part.length = 25;
+  return part;
+}
+
+function thigh (part) {
+  part.name = arguments.callee.name;
+
+  part.width = 40;
+  part.length = 110;
+  return part;
+}
+
+
+function calf (part) {
+  part.name = arguments.callee.name;
+
+  part.width = 30;
+  part.length = 120;
+  return part;
+}
+
+function foot (part) {
+  part.name = arguments.callee.name;
+
+  part.width = 35;
+  part.length = 1;
+  return part;
+}
+
+function clone (x) {
+  return JSON.parse(JSON.stringify(x));
+}
+
+var currentPoint = {
+  x: 0,
+  y: 0
+};
+
+var targets = [];
+
+function drawPart (part, currentPoint) {
+  var adjastedX = Math.cos(part.rotation)*part.length;
+  var adjastedY = Math.sin(part.rotation)*part.length;
+
+  currentPoint = clone(currentPoint);
+  currentPoint.baseX = currentPoint.x;
+  currentPoint.baseY = currentPoint.y;
+  currentPoint.x += adjastedX;
+  currentPoint.y += adjastedY;
+  currentPoint.part = part;
+  if (part.length > 1) {
+    targets.push(currentPoint);
   }
 
-  function palm (part) {
-    part.name = arguments.callee.name;
+  context.lineWidth = part.width;
+  context.beginPath();
+  context.moveTo(0, 0);
+  context.lineTo(adjastedX, adjastedY);
 
-    part.width = 36;
-    part.length = 10;
-    return part;
-  }
-
-  function foreArm (part) {
-    part.width = 25;
-    part.length = 65;
-    part.name = arguments.callee.name;
-
-    return part;
-  }
-
-  function upperArm (part) {
-    part.width = 30;
-    part.length = 65;
-    part.name = arguments.callee.name;
-
-    return part;
-  }
-
-  function shoulder (part) {
-    part.name = arguments.callee.name;
-
-    part.width = 35;
-    part.length = 50;
-    return part;
-  }
-
-  function hip (part) {
-    part.name = arguments.callee.name;
-    part.width = 45;
-    part.length = 25;
-    return part;
-  }
-
-  function thigh (part) {
-    part.name = arguments.callee.name;
-
-    part.width = 40;
-    part.length = 110;
-    return part;
-  }
+  context.translate(adjastedX, adjastedY);
+  context.strokeStyle = 'rgba(30, 30, 30, .9)'
+  context.stroke();
+  (part.connectedTo || []).forEach(function (part) {
+    context.save();
+    drawPart(part, currentPoint);
+    context.restore();
+  });
+}
 
 
-  function calf (part) {
-    part.name = arguments.callee.name;
+function draw (x) {
+  context.clearRect(0,-canvas.width/2,canvas.height,canvas.width)
+  context.save()
+  drawPart(x || rightFoot, currentPoint);
+  context.restore()
+}
 
-    part.width = 30;
-    part.length = 120;
-    return part;
-  }
+draw(); 
 
-  function foot (part) {
-    part.width = 35;
-    part.length = 1;
-    return part;
-  }
+var target;
 
-  function clone (x) {
-    return JSON.parse(JSON.stringify(x));
-  }
+canvas.addEventListener('mousedown', function findTarget (event) {
+  var x = -event.clientY + canvas.height + canvas.offsetTop;
+  var y =  event.clientX - canvas.width/2 - canvas.offsetLeft;
 
-  var currentPoint = {
-    x: 0,
-    y: 0
-  };
-
-  var targets = [];
-
-  function drawPart (part, currentPoint) {
-    var adjastedX = Math.cos(part.rotation)*part.length;
-    var adjastedY = Math.sin(part.rotation)*part.length;
-
-    currentPoint = clone(currentPoint);
-    currentPoint.baseX = currentPoint.x;
-    currentPoint.baseY = currentPoint.y;
-    currentPoint.x += adjastedX;
-    currentPoint.y += adjastedY;
-    currentPoint.part = part;
-    if (part.length > 1) {
-      targets.push(currentPoint);
-    }
-
-    context.lineWidth = part.width;
-    context.beginPath();
-    context.moveTo(0, 0);
-    context.lineTo(adjastedX, adjastedY);
-
-    context.translate(adjastedX, adjastedY);
-    context.strokeStyle = 'rgba(30, 30, 30, .9)'
-    context.stroke();
-    (part.connectedTo || []).forEach(function (part) {
-      context.save();
-      drawPart(part, currentPoint);
-      context.restore();
-    });
-  }
-
-
-  function draw (x) {
-    context.clearRect(0,-canvas.width/2,canvas.height,canvas.width)
-    context.save()
-    drawPart(x || rightFoot, currentPoint);
-    context.restore()
-  }
-
-  draw(); 
-
-  var target;
-
-  canvas.addEventListener('mousedown', function findTarget (event) {
-    var x = -event.clientY + canvas.height //+ canvas.offsetTop;
-    var y =  event.clientX - canvas.width/2 // + canvas.offsetLeft;
-
-    target = targets.map(function (target) {
-      target.distance = Math.sqrt(Math.pow(target.x - x, 2) + Math.pow(target.y - y, 2));
-    //  console.log(target.distance, target.part.name)
+  target = targets.map(function (target) {
+    target.distance = Math.sqrt(Math.pow(target.x - x, 2) + Math.pow(target.y - y, 2));
+    return target;
+  }).reduce(function (min, target) {
+    if (min.distance > target.distance) {
       return target;
-    }).reduce(function (min, target) {
-      if (min.distance > target.distance) {
-        return target;
-      }
-      return min;
-    });
-  });
-
-  canvas.addEventListener('mousemove', function rotateTargetedPart (event) {
-    if (target) {
-      console.log(target.part.name, target.part.rotation)
-      var x = -event.clientY + canvas.height;
-      var y =  event.clientX - canvas.width/2;
-
-      var distance = Math.sqrt(Math.pow(target.baseX - x, 2) + Math.pow(target.baseY - y, 2));
-
-      var angle = Math.acos((x - target.baseX) / distance);
-
-      var sin = (y - target.baseY)/ distance;
-
-      if (sin < 0) {
-        angle = -angle;
-      }
-
-      target.part.rotation = angle;
-      draw();
     }
+    return min;
+  });
+});
+
+canvas.addEventListener('mousemove', function rotateTargetedPart (event) {
+  if (target) {
+    var x = -event.clientY + canvas.height + canvas.offsetTop;;
+    var y =  event.clientX - canvas.width/2 - canvas.offsetLeft;
+
+    var distance = Math.sqrt(Math.pow(target.baseX - x, 2) + Math.pow(target.baseY - y, 2));
+
+    var angle = Math.acos((x - target.baseX) / distance);
+
+    var sin = (y - target.baseY)/ distance;
+
+    if (sin < 0) {
+      angle = -angle;
+    }
+
+    target.part.rotation = angle;
+    draw();
+  }
+});
+
+document.addEventListener('mouseup', function forgetTargetedPart (argument) {
+  target = undefined;
+});
+
+var steps = JSON.parse(localStorage.steps || '[]');
+
+
+function mapOverTwoParts (onePart, otherPart, callback) {
+  var resultingPart = callback(onePart, otherPart);
+
+  resultingPart.connectedTo = (onePart.connectedTo || []).map(function (_, index) {
+    return mapOverTwoParts(onePart.connectedTo[index], otherPart.connectedTo[index], callback);
   });
 
-  document.addEventListener('mouseup', function forgetTargetedPart (argument) {
-    target = undefined;
-  });
+  return resultingPart;
+}
 
-  var steps = [
-    JSON.parse('{"rotation":0,"connectedTo":[{"rotation":-0.10673567264913525,"connectedTo":[{"rotation":0.14768286887393273,"connectedTo":[{"rotation":2.0943951023931953,"connectedTo":[{"width":80,"length":110,"rotation":0,"connectedTo":[{"width":30,"length":65,"rotation":0,"connectedTo":[{"width":45,"length":20,"rotation":0}]},{"rotation":1.2514874722385712,"connectedTo":[{"rotation":2.3420207467177425,"connectedTo":[{"rotation":0.8332509794944114,"connectedTo":[{"rotation":0.367036186367666,"connectedTo":[],"name":"palm","width":36,"length":10}],"width":25,"length":65,"name":"foreArm"}],"width":30,"length":65,"name":"upperArm"}],"name":"shoulder","width":35,"length":50},{"rotation":-1.2566370614359172,"connectedTo":[{"rotation":-2.3143159528595505,"connectedTo":[{"rotation":-0.5727964218255115,"connectedTo":[{"rotation":3.1048562532311874,"connectedTo":[],"name":"palm","width":36,"length":10}],"width":25,"length":65,"name":"foreArm"}],"width":30,"length":65,"name":"upperArm"}],"name":"shoulder","width":35,"length":50}]},{"rotation":1.0471975511965976,"connectedTo":[{"rotation":3.1283510593403054,"connectedTo":[{"rotation":4.858570718461321,"connectedTo":[{"rotation":0,"connectedTo":[],"width":35,"length":1}],"name":"calf","width":30,"length":120}],"name":"thigh","width":40,"length":110}],"name":"hip","width":45,"length":25}],"name":"hip","width":45,"length":25}],"name":"thigh","width":40,"length":110}],"name":"calf","width":30,"length":120}],"width":35,"length":1}')
+var counter = 0;
 
-  ,JSON.parse('{"rotation":1.4915972558254451,"connectedTo":[{"rotation":-0.1922848718075941,"connectedTo":[{"rotation":0.08726646259971647,"connectedTo":[{"rotation":2.0943951023931953,"connectedTo":[{"width":80,"length":110,"rotation":-0.34618103953906115,"connectedTo":[{"width":30,"length":65,"rotation":0,"connectedTo":[{"width":45,"length":20,"rotation":-0.2937565263149919}]},{"rotation":1.2566370614359172,"connectedTo":[{"rotation":1.9508570992453036,"connectedTo":[{"rotation":-2.8879399729732986,"connectedTo":[{"rotation":-2.815029964221117,"connectedTo":[],"name":"palm","width":36,"length":10}],"width":25,"length":65,"name":"foreArm"}],"width":30,"length":65,"name":"upperArm"}],"name":"shoulder","width":35,"length":50},{"rotation":-1.2566370614359172,"connectedTo":[{"rotation":-3.0543261909900767,"connectedTo":[{"rotation":-1.0499628261293885,"connectedTo":[{"rotation":-0.4270293636275496,"connectedTo":[],"name":"palm","width":36,"length":10}],"width":25,"length":65,"name":"foreArm"}],"width":30,"length":65,"name":"upperArm"}],"name":"shoulder","width":35,"length":50}]},{"rotation":1.0471975511965976,"connectedTo":[{"rotation":3.0918433431146406,"connectedTo":[{"rotation":2.880982489482816,"connectedTo":[{"rotation":1.3798461927056886,"connectedTo":[],"width":35,"length":1}],"name":"calf","width":30,"length":120}],"name":"thigh","width":40,"length":110}],"name":"hip","width":45,"length":25}],"name":"hip","width":45,"length":25}],"name":"thigh","width":40,"length":110}],"name":"calf","width":30,"length":120}],"width":35,"length":1}')
+function transition (from, to, rate) {
 
-   
- 
-
-   ,JSON.parse('{"rotation":0,"connectedTo":[{"rotation":0.4287780274460165,"connectedTo":[{"rotation":-0.34948817814215777,"connectedTo":[{"rotation":2.0943951023931953,"connectedTo":[{"width":80,"length":110,"rotation":0.8014916168105632,"connectedTo":[{"width":30,"length":65,"rotation":0,"connectedTo":[{"width":45,"length":20,"rotation":0}]},{"rotation":1.2566370614359172,"connectedTo":[{"rotation":2.272055105319609,"connectedTo":[{"rotation":1.1079543307567692,"connectedTo":[{"rotation":0.38172204518703756,"connectedTo":[],"name":"palm","width":36,"length":10}],"width":25,"length":65,"name":"foreArm"}],"width":30,"length":65,"name":"upperArm"}],"name":"shoulder","width":35,"length":50},{"rotation":-1.2566370614359172,"connectedTo":[{"rotation":-1.7348818066748346,"connectedTo":[{"rotation":-1.4808034585241272,"connectedTo":[{"rotation":-0.9290968786297896,"connectedTo":[],"name":"palm","width":36,"length":10}],"width":25,"length":65,"name":"foreArm"}],"width":30,"length":65,"name":"upperArm"}],"name":"shoulder","width":35,"length":50}]},{"rotation":1.0471975511965976,"connectedTo":[{"rotation":3.8245672197426888,"connectedTo":[{"rotation":5.3149855650317714,"connectedTo":[{"rotation":-1.2760930098418852,"connectedTo":[],"width":35,"length":1}],"name":"calf","width":30,"length":120}],"name":"thigh","width":40,"length":110}],"name":"hip","width":45,"length":25}],"name":"hip","width":45,"length":25}],"name":"thigh","width":40,"length":110}],"name":"calf","width":30,"length":120}],"width":35,"length":1}')
-
-
-  ,JSON.parse('{"rotation":0,"connectedTo":[{"rotation":0,"connectedTo":[{"rotation":0.08726646259971647,"connectedTo":[{"rotation":2.0943951023931953,"connectedTo":[{"width":80,"length":110,"rotation":0,"connectedTo":[{"width":30,"length":65,"rotation":0,"connectedTo":[{"width":45,"length":20,"rotation":0}]},{"rotation":1.2566370614359172,"connectedTo":[{"rotation":2.970187376576439,"connectedTo":[{"rotation":1.7148039094028693,"connectedTo":[{"rotation":1.4329849855583128,"connectedTo":[],"name":"palm","width":36,"length":10}],"width":25,"length":65,"name":"foreArm"}],"width":30,"length":65,"name":"upperArm"}],"name":"shoulder","width":35,"length":50},{"rotation":-1.2566370614359172,"connectedTo":[{"rotation":-1.523086862215576,"connectedTo":[{"rotation":-0.09999379304818971,"connectedTo":[{"rotation":-1.191005851867104,"connectedTo":[],"name":"palm","width":36,"length":10}],"width":25,"length":65,"name":"foreArm"}],"width":30,"length":65,"name":"upperArm"}],"name":"shoulder","width":35,"length":50}]},{"rotation":1.0471975511965976,"connectedTo":[{"rotation":3.0543261909900767,"connectedTo":[{"rotation":3.141592653589793,"connectedTo":[{"rotation":0,"connectedTo":[],"width":35,"length":1}],"name":"calf","width":30,"length":120}],"name":"thigh","width":40,"length":110}],"name":"hip","width":45,"length":25}],"name":"hip","width":45,"length":25}],"name":"thigh","width":40,"length":110}],"name":"calf","width":30,"length":120}],"width":35,"length":1}')
-  ];
-
-
-  function mapOverTwoParts (onePart, otherPart, callback) {
-    var resultingPart = callback(onePart, otherPart);
-    
-    resultingPart.connectedTo = (onePart.connectedTo || []).map(function (_, index) {
-      return mapOverTwoParts(onePart.connectedTo[index], otherPart.connectedTo[index], callback);
-    });
-    
-    return resultingPart;
+  counter++;
+  if (counter === rate) {
+    steps.shift();
+    if (steps.length > 1) {
+      counter = 0; 
+      transition(steps[0], steps[1], rate);
+    }
+    return;
   }
 
-  var counter = 0;
+  var step = mapOverTwoParts(from, to, function (from, to) {
+    var intermediate = clone(from);
+    var angleDifference = to.rotation - from.rotation;
 
-  function transition (from, to, rate) {
-
-    counter++;
-    if (counter === rate) {
-      steps.shift();
-      if (steps.length > 1) {
-        counter = 0; 
-        transition(steps[0], steps[1], rate);
-      }
-      return;
+    if (angleDifference > Math.PI) {
+      angleDifference -= Math.PI*2;
     }
 
-    var step = mapOverTwoParts(from, to, function (from, to) {
-      var intermediate = clone(from);
-      intermediate.rotation += (to.rotation - from.rotation) /rate * counter; //* when / outOf;
+    if (angleDifference < -Math.PI) {
+      angleDifference += Math.PI*2;
+    }
+      intermediate.rotation += angleDifference /rate * counter; //* when / outOf;
       intermediate.width += (to.width - from.width) /rate * counter; //* when / outOf;
       intermediate.length += (to.length - from.length) /rate * counter; //* when / outOf;
       return intermediate;
     });
 
-    draw(step)
+  draw(step)
 
-    window.requestAnimationFrame(transition.bind(this, from, to, rate));
-  }
+  window.requestAnimationFrame(transition.bind(this, from, to, rate));
+}
 
-  //transition(steps[0], steps[1], 60);
+document.getElementById('play').addEventListener('click', function play (argument) {
+  counter = 0;
+  steps = JSON.parse(localStorage.steps || '[]');
+  transition(steps[0], steps[1], 60);
+});
+
+document.getElementById('add-step').addEventListener('click', function play (argument) {
+  counter = 0;
+  steps = JSON.parse(localStorage.steps || '[]');
+  steps.push(rightFoot);
+  localStorage.steps = JSON.stringify(steps);
+  renderSteps();
+});
 
 
 
-
+function renderSteps() {
+  document.getElementById('steps').innerHTML = '';
   steps.forEach(function (step) {
     var element = document.createElement('canvas');
     element.setAttribute('height', 96);
@@ -361,7 +435,11 @@
     context = mainContext;
     document.getElementById('steps').appendChild(element)
   })
+}
 
-  </script>
+renderSteps();
+
+</script>
+
 </body>
 </html>      
