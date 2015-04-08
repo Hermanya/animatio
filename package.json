@@ -4,16 +4,18 @@
   "description": "silhouette theater",
   "main": "index.js",
   "dependencies": {
+    "less": "^2.5.0",
+    "material-ui": "^0.7.3",
     "react": "^0.13.1",
     "react-tap-event-plugin": "^0.1.6",
-    "watchify": "^2.4.0",
-    "material-ui": "^0.7.3",
-    "reactify": "^1.1.0"
+    "reactify": "^1.1.0",
+    "watchify": "^2.4.0"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node_modules/watchify/bin/cmd.js -t [ reactify --es6 ] src/main.js -o index.js -d -v"
+    "build:jsx": "node_modules/watchify/bin/cmd.js -t [ reactify --es6 ] src/main.js -o index.js -d -v",
+    "build:less": "node_modules/less/bin/lessc src/styles/main.less style.css "
   },
   "repository": {
     "type": "git",
@@ -26,8 +28,13 @@
   },
   "homepage": "https://github.com/Hermanya/one-more-time",
   "browserify": {
-        "transform": [
-            ["reactify", {"es6": true}]
-        ]
-    }
+    "transform": [
+      [
+        "reactify",
+        {
+          "es6": true
+        }
+      ]
+    ]
+  }
 }

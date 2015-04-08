@@ -1,98 +1,12 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <style>
-  body {
-    margin: 0px;
-    padding: 0px;
-  }
-
-  #preview-container{
-    position: relative;
-  }
-
-  #preview {
-    display: block;
-  }
-
-  #play {
-    position: absolute;
-    bottom: 8px;
-    left: 24px;
-  }
-
-  #steps {
-    display: inline-block;
-    float: left;
-  }
-  .step, #preview {
-    margin-top: 16px;
-    margin-left: 16px;
-    border: 2px solid black;
-    border-radius: 8px;
-  }
-  #title {
-    margin-top: 16px;
-    margin-left: 16px;
-    padding-left: 8px;
-    border: 2px solid black;
-    border-radius: 8px;
-    background-color: transparent;
-    font-size: 1.2em;
-    text-transform: capitalize;
-  }
-
-  #add-step {
-    margin-top: 39px;
-    margin-left: 16px;
-  }
-
-  #done {
-    position: fixed;
-    top: 16px;
-    right: 16px;
-  }
-
-
-  button {
-    font-size: 1.5em;
-    border-radius: 50%;
-    background: none;
-    border: black 2px solid;
-    width: 2em;
-    height: 2em;
-    transition: 0.25s;
-  }
-
-  button:hover {
-    cursor: pointer;
-    background: rgba(0, 0, 0, 0.25);
-  }
-
-  button:focus, input:focus {
-    outline: none;
-    border-color: rgba(0, 0, 0, 0.5) !important;
-  }
-  
-  </style>
+  <link href="node_modules/mdi/css/materialdesignicons.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
 </head>
 <body>
-  <input type="text" placeholder="Enter title" value="initial title" id="title" autofocus>
-  <div id="preview-container">
-    <canvas id="preview" width="640" height="480"></canvas>
-    <button id="play">&triangleright;</button>
-  </div>
-  <div>
-    <div id="steps"></div>
-    <button id="add-step">&plus;</button>
-  </div>
-  <button id="done">&checkmark;</button>
-  <!-- <button id="disregard">&times;</button> -->
+  <div id="page" class="no-highlighting"></div>
 
-  <script>
- 
-
-</script>
 <script src="index.js"></script>
 </body>
-</html>      
+</html>
