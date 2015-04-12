@@ -1,0 +1,26 @@
+.pose-container {
+  width: 128px;
+  margin: 16px;
+  float: left;
+  position: relative;
+  .transition-length-line {
+    border: 1px black solid;
+    margin: 46px 0;
+    float: left;
+  }
+  .paper {
+    background-color: white;
+    float: left;
+    cursor: col-resize;
+    position: relative;
+    .delete {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      display: none;
+    }
+    &:hover .delete {
+      display: block;
+    }
+  }
+}

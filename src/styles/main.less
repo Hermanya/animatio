@@ -1,0 +1,77 @@
+/* material-ui */
+@import "node_modules/material-ui/src/less/scaffolding.less";
+
+//Define a custom less file to override any variables defined in scaffolding.less
+@import "custom-overrides.less";
+
+@import "node_modules/material-ui/src/less/components.less";
+@import "pose.less";
+
+.no-highlighting {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+
+@margin: 16px;
+
+#preview {
+    position: relative;
+    display: inline-block;
+    height: 414px;
+    background-color: white;
+    #play {
+      position: absolute;
+      bottom: @margin;
+      left: @margin;
+    }
+}
+
+#complete {
+  position: fixed;
+  right: @margin;
+  top: @margin;
+}
+
+#discard {
+  position: fixed;
+  left: @margin;
+  top: @margin;
+}
+
+
+#page {
+    max-width: 832px;
+    margin: 24px auto;
+    text-align: center;
+    background-color: #eee;
+}
+
+canvas {
+  display: block;
+}
+
+#frames {
+  padding: @margin;
+  .frame {
+    float: left;
+  }
+  #push-frame-container {
+    float: left;
+    padding: 33px 53px;
+  }
+}
+
+.clearfix:before{
+  display:table;
+  content:""
+}
+.clearfix:after{
+  display:table;
+  clear:both;
+  content:""
+}
