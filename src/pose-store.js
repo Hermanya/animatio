@@ -1,4 +1,4 @@
-var frameActions = require('./frame-actions.js');
+var frameActions = require('./pose-actions.js');
 var Reflux = require('./reflux.js');
 var human = require('./human.js');
 var localStorageKey = "frames";

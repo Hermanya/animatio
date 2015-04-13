@@ -1,9 +1,10 @@
 const React = require('react'),
 draw = require('./render.js'),
 mui = require('material-ui'),
-frameActions = require('./frame-actions.js'),
+frameActions = require('./pose-actions.js'),
 Paper = mui.Paper,
-FloatingActionButton = mui.FloatingActionButton
+FloatingActionButton = mui.FloatingActionButton,
+PoseOnCanvas = require('./pose-on-canvas.js')
 
 
 
@@ -39,7 +40,8 @@ class Pose extends React.Component {
         <Paper zDepth={this.state.isUpdatingTransitionLength ? 2 : 1}
           className="paper"
           onMouseDown={this.handleMouseDown}>
-          <canvas width={canvasWidth} height={82} ref="canvas"></canvas>
+          <PoseOnCanvas width={canvasWidth} actor={this.props.data} scale={0.18}></PoseOnCanvas>
+
 
           <FloatingActionButton
             onClick={frameActions.deleteFrameById.bind(this, this.props.data.id)}
@@ -82,41 +84,6 @@ class Pose extends React.Component {
       })
     }, 0)
 
-  }
-
-  componentDidMount () {
-    var element = React.findDOMNode(this.refs.canvas);
-    var context = element.getContext('2d');
-
-    var canvasWidth = element.width;
-    var canvasHeight = element.height;
-
-    element.width = canvasWidth * window.devicePixelRatio;
-    element.height = canvasHeight * window.devicePixelRatio;
-    element.style.width = canvasWidth + 'px';
-    element.style.height = canvasHeight + 'px';
-
-    this.paint();
-  }
-
-  componentDidUpdate () {
-    this.paint();
-  }
-
-  paint (context) {
-    var element = React.findDOMNode(this.refs.canvas);
-    var context = element.getContext('2d');
-    context.clearRect(0, 0, element.width, element.height);
-
-
-    context.save();
-    context.rotate(-Math.PI/2);
-    context.translate(-element.height, element.width/2);
-    context.scale(window.devicePixelRatio * 0.18, window.devicePixelRatio * 0.18);
-    context.lineJoin = 'round';
-    context.lineCap = 'round';
-    draw(context, this.props.data)
-    context.restore();
   }
 
 }

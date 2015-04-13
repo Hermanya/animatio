@@ -70,6 +70,11 @@ function Human () {
     connectedTo: [rightCalf]
   })
 
+  rightFoot.translateX = 0;
+  rightFoot.translateY = 10;
+
+  rightFoot.scale = 0.9
+
   return rightFoot;
 }
 

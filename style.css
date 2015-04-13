@@ -2631,7 +2631,7 @@ hr {
 }
 .pose-container .transition-length-line {
   border: 1px black solid;
-  margin: 46px 0;
+  margin: 40px 0;
   float: left;
 }
 .pose-container .paper {
@@ -2657,13 +2657,15 @@ hr {
   -ms-user-select: none;
   user-select: none;
 }
-#preview {
+#preview,
+#pose-editor {
   position: relative;
   display: inline-block;
   height: 414px;
   background-color: white;
 }
-#preview #play {
+#preview #play,
+#pose-editor #play {
   position: absolute;
   bottom: 16px;
   left: 16px;
@@ -2679,7 +2681,7 @@ hr {
   top: 16px;
 }
 #page {
-  max-width: 832px;
+  max-width: 900px;
   margin: 24px auto;
   text-align: center;
   background-color: #eee;

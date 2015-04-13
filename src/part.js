@@ -20,9 +20,11 @@ module.exports = Part = {
     }
     child.rotation = mom.rotation + angleDifference*similarityToDad
 
-    var otherProps = ['length', 'width']
+    var otherProps = ['length', 'width', 'translateX', 'translateY', 'scale']
     otherProps.forEach(function (prop) {
-      child[prop] = (dad[prop] - mom[prop]) * similarityToDad + mom[prop]
+      if (dad[prop]) {
+        child[prop] = (dad[prop] - mom[prop]) * similarityToDad + mom[prop]
+      }
     })
 
     return child;
@@ -36,7 +38,6 @@ module.exports = Part = {
    context.moveTo(0, 0);
    context.lineTo(x, y);
    context.translate(x, y);
-   context.strokeStyle = 'rgba(174, 242, 127, 0.8)'// yellow 'rgba(254, 226, 102, 0.8)'
    context.stroke();
    (part.connectedTo || []).forEach(function (part) {
      context.save();
@@ -45,38 +46,40 @@ module.exports = Part = {
    });
  },
 
- getRelativePosition: function (part, parent) {
-   return {
-     parent: parent,
-     x: parent.x + Math.cos(part.rotation) * part.length,
-     y: parent.y + Math.sin(part.rotation) * part.length
-   }
+ setRelativePosition: function (part, parent) {
+   part.parent = parent
+   part.x = parent.x + Math.cos(part.rotation) * part.length
+   part.y = parent.y + Math.sin(part.rotation) * part.length
  },
 
  getTargets: function (parentTarget, part) {
-   var target
    if (!part) {
-     target = parentTarget
+     part = parentTarget
+     part.x = part.translateY
+     part.y = part.translateX
    } else {
-     target = getRelativePosition(part, parentTarget)
+     this.setRelativePosition(part, parentTarget)
    }
-   var targets = parent.connectedTo.map(Part.getTargets.bind(undefined, target))
+   var targets = [].concat.apply([],(part.connectedTo || []).map(Part.getTargets.bind(this, part)))
    if (part.length > 1) {
-     targets.push(target)
+     targets.push(part)
    }
    return targets
  },
 
  rotate: function (target, x, y) {
-   var distance = Math.sqrt(Math.pow(target.baseX - x, 2) + Math.pow(target.baseY - y, 2));
 
-   var angle = Math.acos((x - target.baseX) / distance);
+   var distance = Math.sqrt(Math.pow(target.parent.x - x, 2) + Math.pow(target.parent.y - y, 2));
 
-   var sin = (y - target.baseY)/ distance;
+   var angle = Math.acos((x - target.parent.x) / distance);
+
+   var sin = (y - target.parent.y)/ distance;
 
    if (sin < 0) {
      angle = -angle;
    }
+
+   target.rotation = angle;
 
  }
 

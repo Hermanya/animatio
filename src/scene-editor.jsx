@@ -1,27 +1,27 @@
 const React = require('react'),
   Reflux = require('./reflux.js'),
   Preview = require('./preview.jsx'),
+  PoseEditor = require('./pose-editor.jsx'),
   Poses = require('./poses.jsx'),
   mui = require('material-ui'),
   FloatingActionButton = mui.FloatingActionButton,
   Paper = mui.Paper,
   TextField = mui.TextField,
   frames = JSON.parse(localStorage.frames || '[]'),
-  frameStore = require('./frame-store.js')
+  frameStore = require('./pose-store.js')
 
 class SceneEditor extends React.Component {
 
   constructor (props) {
     super(props)
-    // this.mixins = [Reflux.connect(frameStore, 'frames')]
     this.state = {
-        frames: frameStore.getInitialState()
+        poses: frameStore.getInitialState()
     }
   }
 
-  onFramesChange (frames) {
+  onFramesChange (poses) {
       this.setState({
-          frames: frames
+        poses: poses
       })
   }
   componentDidMount () {
@@ -33,6 +33,7 @@ class SceneEditor extends React.Component {
 
 
   render() {
+//  <Preview data={this.state.poses}/>
     return (
       <Paper zDepth={1}>
           <header>
@@ -40,9 +41,9 @@ class SceneEditor extends React.Component {
               hintText="Enter Title"
               floatingLabelText="Title" />
           </header>
-          <Preview data={this.state.frames}/>
+          <PoseEditor pose={this.state.poses[0]}/>
 
-          <Poses data={this.state.frames}/>
+          <Poses data={this.state.poses}/>
 
           <FloatingActionButton iconClassName="mdi mdi-check" id="complete" disabled />
           <FloatingActionButton iconClassName="mdi mdi-close" id="discard" disabled />

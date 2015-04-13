@@ -4,76 +4,63 @@ mui = require('material-ui'),
 human = require('./human.js'),
 part = require('./part.js'),
 FloatingActionButton = mui.FloatingActionButton,
-Paper = mui.Paper
+Paper = mui.Paper,
+PoseOnCanvas = require('./pose-on-canvas.js')
 
 class Preview extends React.Component {
+
+  constructor (props) {
+    super(props)
+    this.state = {
+      pose: props.data[0]
+    }
+  }
 
   render () {
     return (
       <Paper zDepth={1}  id="preview">
-        <canvas  id="preview-canvas" width="736" height="414" ref="canvas"></canvas>
+        <PoseOnCanvas id="preview-canvas" width={736}
+          actor={this.state.pose || this.props.data[0]}></PoseOnCanvas>
+
         <FloatingActionButton iconClassName="mdi mdi-play" id="play" onClick={this.play.bind(this)} secondary={true} />
       </Paper>
     )
   }
 
-  componentDidMount () {
-    this.setState({
-      restOfFrames: this.props.data
-    });
-
-    const element = React.findDOMNode(this.refs.canvas);
-    const context = element.getContext('2d');
-
-    var canvasWidth = element.width;
-    var canvasHeight = element.height;
-
-    element.width = canvasWidth * window.devicePixelRatio;
-    element.height = canvasHeight * window.devicePixelRatio;
-    element.style.width = canvasWidth + 'px';
-    element.style.height = canvasHeight + 'px';
-
-    context.rotate(-Math.PI/2);
-
-    context.translate(-element.height, element.width/2);
-    context.scale(window.devicePixelRatio, window.devicePixelRatio);
-
-    context.lineJoin = 'round';
-    context.lineCap = 'round';
-    this.draw = (part) => {
-      context.clearRect(0,-element.width/2,element.height,element.width)
-      render(context, part)
-    }
-    this.draw(this.props.data[0] || human())
-  }
-
   play () {
 
-    var counter = 0;
-    var steps = JSON.parse(localStorage.frames || '[]');
+    var poseNumber = 0;
+    var poses = this.props.data;
 
-    var transition = (from, to, rate) => {
+    var transition = (from, to, frameNumber) => {
+      var numberOfFrames = to.transition.numberOfFrames;
 
-     counter++;
-     if (counter === rate) {
-       steps.shift();
-       if (steps.length > 1) {
-         counter = 0;
-         transition(steps[0], steps[1], rate);
-       }
-       return;
-     }
+      if (frameNumber !== numberOfFrames) {
 
-     var step = part.mapOverTwoParts(from, to, part.getIntermediatePart.bind(undefined, counter/rate));
+        var pose = part.mapOverTwoParts(from, to, part.getIntermediatePart.bind(undefined, frameNumber/numberOfFrames));
+        this.setState({
+          pose: pose
+        })
+        window.requestAnimationFrame(transition.bind(undefined, from, to, frameNumber + 1));
 
+      } else if (poseNumber + 1 !== poses.length - 1) {
 
-       this.draw(step)
+        poseNumber++;
+        transition(poses[poseNumber], poses[poseNumber + 1], 0)
 
-     window.requestAnimationFrame(transition.bind(undefined, from, to, to.transition.numberOfFrames));
+      } else {
+
+        this.setState({
+          pose: this.props.data[0]
+        })
+
+      }
    }
 
-   transition(steps[0], steps[1], steps[1].transition.numberOfFrames);
+   transition(poses[poseNumber], poses[poseNumber + 1], 0);
   }
+
+
 }
 
 module.exports = Preview;

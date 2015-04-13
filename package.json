@@ -14,7 +14,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:jsx": "node_modules/watchify/bin/cmd.js -t [ reactify --es6 ] src/main.js -o index.js -d -v",
+    "build:jsx": "node_modules/watchify/bin/cmd.js -t [ reactify --es6 --target es5 ] src/main.js -o index.js -d -v",
     "build:less": "node_modules/less/bin/lessc src/styles/main.less style.css "
   },
   "repository": {
@@ -26,15 +26,5 @@
   "bugs": {
     "url": "https://github.com/Hermanya/one-more-time/issues"
   },
-  "homepage": "https://github.com/Hermanya/one-more-time",
-  "browserify": {
-    "transform": [
-      [
-        "reactify",
-        {
-          "es6": true
-        }
-      ]
-    ]
-  }
+  "homepage": "https://github.com/Hermanya/one-more-time"
 }
