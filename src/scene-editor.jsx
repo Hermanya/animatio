@@ -8,14 +8,14 @@ const React = require('react'),
   Paper = mui.Paper,
   TextField = mui.TextField,
   frames = JSON.parse(localStorage.frames || '[]'),
-  frameStore = require('./pose-store.js')
+  poseStore = require('./pose-store.js')
 
 class SceneEditor extends React.Component {
 
   constructor (props) {
     super(props)
     this.state = {
-        poses: frameStore.getInitialState()
+        poses: poseStore.getInitialState()
     }
   }
 
@@ -25,7 +25,7 @@ class SceneEditor extends React.Component {
       })
   }
   componentDidMount () {
-      this.unsubscribe = frameStore.listen(this.onFramesChange.bind(this));
+      this.unsubscribe = poseStore.listen(this.onFramesChange.bind(this));
   }
   componentWillUnmount () {
       this.unsubscribe();
@@ -33,15 +33,15 @@ class SceneEditor extends React.Component {
 
 
   render() {
-//  <Preview data={this.state.poses}/>
+
     return (
       <Paper zDepth={1}>
           <header>
             <TextField
               hintText="Enter Title"
-              floatingLabelText="Title" />
+              floatingLabelText="Scene Title" />
           </header>
-          <PoseEditor pose={this.state.poses[0]}/>
+          <Preview data={this.state.poses}/>
 
           <Poses data={this.state.poses}/>
 

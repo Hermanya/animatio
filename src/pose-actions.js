@@ -1,5 +1,7 @@
 module.exports = require('./reflux.js').createActions([
-  'addFrame',
-  'updateFrameTransition',
-  'deleteFrameById'
+  'append',
+  'insertAfter',
+  'update',
+  'updateTransition',
+  'delete'
 ]);

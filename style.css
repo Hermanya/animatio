@@ -2646,7 +2646,16 @@ hr {
   right: -8px;
   display: none;
 }
+.pose-container .paper .edit {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  display: none;
+}
 .pose-container .paper:hover .delete {
+  display: block;
+}
+.pose-container .paper:hover .edit {
   display: block;
 }
 .no-highlighting {
@@ -2656,6 +2665,10 @@ hr {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+.pose-editor-button {
+  margin: 16px;
+  float: right;
 }
 #preview,
 #pose-editor {

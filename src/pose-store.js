@@ -22,7 +22,7 @@ function clone (item) {
 
 module.exports = Reflux.createStore({
   listenables: [frameActions],
-  onUpdateFrameTransition: function(itemId, transition) {
+  onUpdateTransition: function(itemId, transition) {
     var foundItem = getItemById(this.list,itemId);
     if (!foundItem) {
       return;
@@ -30,20 +30,30 @@ module.exports = Reflux.createStore({
     foundItem.transition.numberOfFrames = transition;
     this.updateList(this.list);
   },
-  onAddFrame: function(frame) {
-    setDefaults(frame)
+  onUpdate: function(item) {
+    var foundItem = getItemById(this.list,item.id);
+    if (!foundItem) {
+      return;
+    }
+    Object.keys(item).forEach(function (key) {
+      foundItem[key] = item[key]
+    })
+    this.updateList(this.list);
+  },
+  onAppend: function(item) {
+    this.updateList(this.list.concat([clone(item)]));
+  },
+  onInsertAfter: function(item, precedingId) {
+
     this.updateList(this.list.concat([clone(frame)]));
   },
-  onDeleteFrameById: function(itemId) {
-    console.log(itemId)
+  onDelete: function(itemId) {
     this.updateList(this.list.filter(function(item){
       return item.id!==itemId;
     }));
   },
-  // called whenever we change a list. normally this would mean a database API call
   updateList: function(list){
     localStorage.setItem(localStorageKey, JSON.stringify(list));
-    // if we used a real database, we would likely do the below in a callback
     this.list = list;
     this.trigger(list);
   },

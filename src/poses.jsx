@@ -1,5 +1,5 @@
 const React = require('react'),
-actions = require('./pose-actions.js'),
+poseActions = require('./pose-actions.js'),
 mui = require('material-ui'),
 Pose = require('./pose.jsx'),
 FloatingActionButton = mui.FloatingActionButton,
@@ -14,9 +14,9 @@ class Poses extends React.Component {
 
   render () {
 
-    const frames = this.props.data.map((frame, index) => {
+    const poses = this.props.data.map((pose, index) => {
       return (
-        <Pose data={frame} index={index} key={index}/>
+        <Pose data={pose} index={index} key={index} />
       )
     })
 
@@ -43,7 +43,7 @@ class Poses extends React.Component {
           <ToolbarGroup>
           </ToolbarGroup>
         </Toolbar>
-        {frames}
+        {poses}
         <div id="push-frame-container">
           <FloatingActionButton onClick={this.handleAdd.bind(this)} iconClassName="mdi mdi-plus" id="push-frame"/>
         </div>
@@ -52,8 +52,14 @@ class Poses extends React.Component {
   }
 
   handleAdd () {
-    actions.addFrame(require('./human.js')());
+    var {router} = this.context;
+    router.transitionTo('/pose')
   }
+  
 }
+
+Poses.contextTypes = {
+  router: React.PropTypes.func
+};
 
 module.exports = Poses;

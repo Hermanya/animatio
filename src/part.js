@@ -46,19 +46,19 @@ module.exports = Part = {
    });
  },
 
- setRelativePosition: function (part, parent) {
+ setRelativePosition: function (parent, part) {
    part.parent = parent
    part.x = parent.x + Math.cos(part.rotation) * part.length
    part.y = parent.y + Math.sin(part.rotation) * part.length
  },
 
- getTargets: function (parentTarget, part) {
+ getTargets: function (parent, part) {
    if (!part) {
-     part = parentTarget
+     part = parent
      part.x = part.translateY
      part.y = part.translateX
    } else {
-     this.setRelativePosition(part, parentTarget)
+     this.setRelativePosition(parent, part)
    }
    var targets = [].concat.apply([],(part.connectedTo || []).map(Part.getTargets.bind(this, part)))
    if (part.length > 1) {

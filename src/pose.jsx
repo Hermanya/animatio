@@ -1,7 +1,7 @@
 const React = require('react'),
 draw = require('./render.js'),
 mui = require('material-ui'),
-frameActions = require('./pose-actions.js'),
+poseActions = require('./pose-actions.js'),
 Paper = mui.Paper,
 FloatingActionButton = mui.FloatingActionButton,
 PoseOnCanvas = require('./pose-on-canvas.js')
@@ -14,6 +14,9 @@ class Pose extends React.Component {
     super(props);
     this.state = {
       isUpdatingTransitionLength: false
+    };
+    this.contextTypes = {
+      router: React.PropTypes.func
     };
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
@@ -44,10 +47,15 @@ class Pose extends React.Component {
 
 
           <FloatingActionButton
-            onClick={frameActions.deleteFrameById.bind(this, this.props.data.id)}
+            onClick={poseActions.delete.bind(this, this.props.data.id)}
             iconClassName="mdi mdi-delete"
             className="delete"
             mini={true}/>
+            <FloatingActionButton
+              onClick={this.handleEdit.bind(this)}
+              iconClassName="mdi mdi-pencil"
+              className="edit"
+              mini={true}/>
         </Paper>
       </div>
     )
@@ -77,7 +85,7 @@ class Pose extends React.Component {
     document.removeEventListener('mouseup', this.handleMouseUp)
     var newValue = this.state.intermidiateLength
 
-    frameActions.updateFrameTransition(this.props.data.id, newValue);
+    poseActions.updateTransition(this.props.data.id, newValue);
     window.setTimeout(() => {
       this.setState({
         isUpdatingTransitionLength: false
@@ -86,6 +94,15 @@ class Pose extends React.Component {
 
   }
 
+  handleEdit () {
+    var {router} = this.context;
+    router.transitionTo('/pose/' + this.props.data.id)
+  }
+
 }
+
+Pose.contextTypes = {
+  router: React.PropTypes.func
+};
 
 module.exports = Pose;

@@ -7,8 +7,35 @@ var injectTapEventPlugin = require("react-tap-event-plugin");
 injectTapEventPlugin();
 
 var React = require('react');
+
+var Router = require('react-router');
+var { Route, DefaultRoute, RouteHandler} = Router;
+
+
 var SceneEditor = require('./scene-editor.jsx');
-React.render(
-  React.createElement(SceneEditor, null),
-  document.getElementById('page')
+var PoseEditor = require('./pose-editor.jsx');
+
+var App = React.createClass({
+  render: function () {
+    return (
+      <div>
+      <RouteHandler/>
+      </div>
+    );
+  }
+});
+
+var routes = (
+  <Route handler={App} path="/">
+    <DefaultRoute handler={SceneEditor} />
+    <Route name="scene-creator" path="scene" handler={SceneEditor} />
+    <Route name="scene-editor" path="scene/:id" handler={SceneEditor} />
+    <Route name="pose-creator" path="pose" handler={PoseEditor} />
+    <Route name="pose-editor" path="pose/:id" handler={PoseEditor} />
+  </Route>
 );
+
+
+Router.run(routes /* , Router.HistoryLocation */, function (Handler) {
+  React.render(<Handler/>, document.getElementById('page'));
+});
