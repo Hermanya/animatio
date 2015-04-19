@@ -37,8 +37,14 @@ class PoseEditor extends React.Component {
   }
 
   render () {
-    var width = 736 //document.getElementById('page').offsetWidth
+    var width = document.getElementById('page').offsetWidth
     this.state.canvasScale = width / 736;
+
+    var maybeSaveAsNext;
+    if (this.state.pose.id) {
+      maybeSaveAsNext = <RaisedButton onClick={this.saveAsNext.bind(this)} label="save as next pose" className="pose-editor-button" />
+    }
+
     return (
       <Paper zDepth={1} ref="editor"  id="pose-editor" onMouseDown={this.handleMouseDown} >
         <PoseOnCanvas width={width}
@@ -48,8 +54,7 @@ class PoseEditor extends React.Component {
 
           <FloatingActionButton iconClassName="mdi mdi-check" onClick={this.save.bind(this)} className="pose-editor-button" mini={true} />
           <FloatingActionButton iconClassName="mdi mdi-close" onClick={this.back.bind(this)} className="pose-editor-button" mini={true} secondary={true}/>
-          <RaisedButton label="save as next pose" className="pose-editor-button" />
-
+          {maybeSaveAsNext}
       </Paper>
     )
   }
@@ -114,6 +119,11 @@ class PoseEditor extends React.Component {
     } else {
       poseActions.append(this.state.pose)
     }
+    this.back.call(this)
+  }
+
+  saveAsNext () {
+    poseActions.insertAfter(this.state.pose);
     this.back.call(this)
   }
 

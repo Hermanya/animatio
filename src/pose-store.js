@@ -41,9 +41,13 @@ module.exports = Reflux.createStore({
     setDefaults(item)
     this.updateList(this.list.concat([clone(item)]));
   },
-  onInsertAfter: function(item, precedingId) {
-
-    this.updateList(this.list.concat([clone(frame)]));
+  onInsertAfter: function(item) {
+    var list = this.list;
+    var foundItem = getItemById(list,item.id);
+    setDefaults(item);
+    var index = list.indexOf(foundItem)
+    var newList = list.splice(0, index + 1).concat([item]).concat(list)
+    this.updateList( newList  );
   },
   onDelete: function(itemId) {
     this.updateList(this.list.filter(function(item){

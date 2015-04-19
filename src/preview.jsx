@@ -28,9 +28,9 @@ class Preview extends React.Component {
   }
 
   componentDidMount () {
-    if (this.props.data.length > 1) {
-      this.play()
-    }
+    // if (this.props.data.length > 1) {
+    //   this.play()
+    // }
   }
 
   play () {
