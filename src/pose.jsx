@@ -6,8 +6,6 @@ Paper = mui.Paper,
 FloatingActionButton = mui.FloatingActionButton,
 PoseOnCanvas = require('./pose-on-canvas.js')
 
-
-
 class Pose extends React.Component {
 
   constructor(props) {
@@ -38,25 +36,34 @@ class Pose extends React.Component {
       transitionElement = <div className="transition-length-line" style={{width: transitionLength + 'px'}}></div>
       containerWidth = (canvasWidth + transitionLength + 2) + 'px';
     }
+
+    var actions = [];
+
+    if (!this.state.style) {
+      actions.push(<FloatingActionButton
+        onClick={poseActions.delete.bind(this, this.props.data.id)}
+        iconClassName="mdi mdi-delete"
+        className="delete"
+        mini={true}/>)
+
+      actions.push(
+        <FloatingActionButton
+          onClick={this.handleEdit.bind(this)}
+          iconClassName="mdi mdi-pencil"
+          className="edit"
+          mini={true}/>)
+    }
     return (
       <div className="pose-container" style={{width: containerWidth}}>
         {transitionElement}
         <Paper zDepth={this.state.isUpdatingTransitionLength ? 2 : 1}
-          className="paper"
+          className="paper" ref="pose"
+          style={this.state.style}
           onMouseDown={this.handleMouseDown}>
-          <PoseOnCanvas width={canvasWidth} actor={this.props.data} scale={scale}></PoseOnCanvas>
+          <PoseOnCanvas width={canvasWidth} actor={this.props.data} scale={this.state.scale || scale}></PoseOnCanvas>
 
+          {actions}
 
-          <FloatingActionButton
-            onClick={poseActions.delete.bind(this, this.props.data.id)}
-            iconClassName="mdi mdi-delete"
-            className="delete"
-            mini={true}/>
-            <FloatingActionButton
-              onClick={this.handleEdit.bind(this)}
-              iconClassName="mdi mdi-pencil"
-              className="edit"
-              mini={true}/>
         </Paper>
       </div>
     )

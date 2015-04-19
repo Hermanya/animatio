@@ -37,16 +37,16 @@ class PoseEditor extends React.Component {
   }
 
   render () {
-    var width = document.getElementById('page').offsetWidth
+    var width = document.body.offsetWidth //document.getElementById('page').offsetWidth
     this.state.canvasScale = width / 736;
 
     var maybeSaveAsNext;
     if (this.state.pose.id) {
       maybeSaveAsNext = <RaisedButton onClick={this.saveAsNext.bind(this)} label="save as next pose" className="pose-editor-button" />
     }
-
+//
     return (
-      <Paper zDepth={1} ref="editor"  id="pose-editor" onMouseDown={this.handleMouseDown} >
+      <Paper zDepth={1} ref="editor" style={{position: 'fixed', top: 0, left: 0}} id="pose-editor" onMouseDown={this.handleMouseDown} >
         <PoseOnCanvas width={width}
           actor={this.state.pose}
           scale={this.state.canvasScale}
@@ -90,8 +90,8 @@ class PoseEditor extends React.Component {
   }
 
   getOffset (prop, element) {
-    if (element === document.body) {
-      return element[prop];
+    if (!element || element === document.body) {
+      return 0;
     }
     return element[prop] + this.getOffset(prop, element.offsetParent);
   }

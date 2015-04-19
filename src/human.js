@@ -2,25 +2,8 @@ module.exports = Human
 
 function Human () {
 
-  var leftFoot = foot({
-    rotation: 0,
-    connectedTo: []
-  })
-
-  var leftCalf = calf({
-    rotation: Math.PI,
-    connectedTo: [leftFoot]
-  })
-
-  var leftThigh = thigh({
-    rotation: Math.PI/36*35,
-    connectedTo: [leftCalf]
-  })
-
-  var leftHip = hip({
-    rotation: Math.PI/3,
-    connectedTo: [leftThigh]
-  })
+  var leftLeg = leg({isLeft: true})
+  var rightLeg = leg({isLeft: false})
 
 
 
@@ -50,9 +33,17 @@ function Human () {
     connectedTo: [neck, leftArm, rightArm]
   }
 
+  var belly = {
+    name: 'belly',
+    width: 0,
+    length: 0,
+    rotation: 0,
+    connectedTo: [torso, leftLeg, rightLeg]
+  }
+
   var rightHip = hip({
     rotation: 2*Math.PI/3,
-    connectedTo: [torso, leftHip]
+    connectedTo: [torso, leftLeg]
   })
 
   var rightThigh = thigh({
@@ -70,12 +61,12 @@ function Human () {
     connectedTo: [rightCalf]
   })
 
-  rightFoot.translateX = 0;
-  rightFoot.translateY = 10;
-  rightFoot.scale = 0.9
-  rightFoot.transition = {numberOfFrames: 30}
+  belly.translateX = 0;
+  belly.translateY = 230;
+  belly.scale = 0.9
+  belly.transition = {numberOfFrames: 30}
 
-  return rightFoot;
+  return belly;
 }
 
 
@@ -123,6 +114,24 @@ function shoulder (part) {
   part.length = 50;
   return part;
 }
+
+function leg (options) {
+  var sign = options.isLeft ? 1 : -1;
+  return hip({
+    rotation: Math.PI/3*sign,
+    connectedTo: [thigh({
+      rotation: Math.PI/36*35*sign,
+      connectedTo: [calf({
+        rotation: Math.PI*sign,
+        connectedTo: [foot({
+          rotation: 0,
+          connectedTo: []
+        })]
+      })]
+    })]
+  })
+}
+
 
 function hip (part) {
   part.name = arguments.callee.name;
