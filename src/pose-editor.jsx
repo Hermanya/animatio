@@ -6,46 +6,68 @@ part = require('./part.js'),
 FloatingActionButton = mui.FloatingActionButton,
 RaisedButton = mui.RaisedButton,
 Paper = mui.Paper,
-PoseOnCanvas = require('./pose-on-canvas.js')
+PoseOnCanvas = require('./pose-on-canvas.js'),
+poseStore = require('./pose-store.js'),
+poseActions = require('./pose-actions.js')
+
 
 class PoseEditor extends React.Component {
 
   constructor (props) {
     super(props)
-
-    var pose = human()
-
     this.state = {
-      pose
+      pose: human()
     }
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
   }
 
+  componentDidMount () {
+    var { router } = this.context;
+    var id = parseInt(router.getCurrentParams().id);
+
+    var pose = poseStore.getInitialState().filter(function (pose) {
+      return pose.id === id;
+    })[0] || human()
+
+    this.setState({
+      pose
+    })
+  }
+
   render () {
+    var width = 736 //document.getElementById('page').offsetWidth
+    this.state.canvasScale = width / 736;
     return (
       <Paper zDepth={1} ref="editor"  id="pose-editor" onMouseDown={this.handleMouseDown} >
-        <PoseOnCanvas width={736}
+        <PoseOnCanvas width={width}
           actor={this.state.pose}
+          scale={this.state.canvasScale}
           ></PoseOnCanvas>
-          <div className="clearfix">
-          <FloatingActionButton iconClassName="mdi mdi-check" className="pose-editor-button" mini={true} />
-          <FloatingActionButton iconClassName="mdi mdi-close" className="pose-editor-button" mini={true} secondary={true}/>
+
+          <FloatingActionButton iconClassName="mdi mdi-check" onClick={this.save.bind(this)} className="pose-editor-button" mini={true} />
+          <FloatingActionButton iconClassName="mdi mdi-close" onClick={this.back.bind(this)} className="pose-editor-button" mini={true} secondary={true}/>
           <RaisedButton label="save as next pose" className="pose-editor-button" />
-          </div>
+
       </Paper>
     )
   }
 
+  getCursorCoordinates () {
+    var canvas = document.querySelector('#pose-editor canvas')
+    return {
+      y:-(event.pageY - this.getOffset('offsetTop', canvas) - canvas.height/window.devicePixelRatio) /this.state.canvasScale/ this.state.pose.scale  ,
+      x: (event.pageX - this.getOffset('offsetLeft', canvas) - canvas.width/2/window.devicePixelRatio) /this.state.canvasScale/ this.state.pose.scale
+    }
+  }
+
 
   handleMouseDown () {
-    var canvas = document.querySelector('#pose-editor canvas')
-    var x = (event.pageY - canvas.height/window.devicePixelRatio - this.getOffset('offsetTop', canvas)) / -this.state.pose.scale
-    var y = (event.pageX - canvas.width/2/window.devicePixelRatio - this.getOffset('offsetLeft', canvas)) / this.state.pose.scale
+    var {x, y} = this.getCursorCoordinates();
 
     var target = Part.getTargets(this.state.pose).map(function (target) {
-      target.distance = Math.sqrt(Math.pow(target.x - x, 2) + Math.pow(target.y - y, 2));
+      target.distance = Math.sqrt(Math.pow(target.x - y, 2) + Math.pow(target.y - x, 2));
       return target;
     }).reduce(function (min, target) {
       if (min.distance > target.distance) {
@@ -70,11 +92,14 @@ class PoseEditor extends React.Component {
   }
 
   handleMouseMove (event) {
-    var canvas = document.querySelector('#pose-editor canvas')
-    var y = (event.pageY - canvas.height/window.devicePixelRatio - this.getOffset('offsetTop', canvas)) / -this.state.pose.scale;
-    var x = (event.pageX - canvas.width/2/window.devicePixelRatio - this.getOffset('offsetLeft', canvas)) / this.state.pose.scale;
+    var {x, y} = this.getCursorCoordinates();
 
-    Part.rotate(this.state.target, y, x)
+    if (event.shiftKey || event.ctrlKey || event.altKey) {
+      this.state.pose.translateX = x
+      this.state.pose.translateY = y
+    } else {
+      Part.rotate(this.state.target, y, x)
+    }
     this.forceUpdate();
   }
 
@@ -83,8 +108,24 @@ class PoseEditor extends React.Component {
     document.removeEventListener('mouseup', this.handleMouseUp)
   }
 
+  save () {
+    if (this.state.pose.id) {
+      poseActions.update(this.state.pose)
+    } else {
+      poseActions.append(this.state.pose)
+    }
+    this.back.call(this)
+  }
 
+  back () {
+    var {router} = this.context;
+    router.transitionTo('/scene')
+  }
 
 }
+
+PoseEditor.contextTypes = {
+  router: React.PropTypes.func
+};
 
 module.exports = PoseEditor;

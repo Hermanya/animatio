@@ -2674,7 +2674,6 @@ hr {
 #pose-editor {
   position: relative;
   display: inline-block;
-  height: 414px;
   background-color: white;
 }
 #preview #play,
@@ -2697,7 +2696,6 @@ hr {
   max-width: 900px;
   margin: 24px auto;
   text-align: center;
-  background-color: #eee;
 }
 canvas {
   display: block;

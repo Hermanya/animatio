@@ -46,40 +46,47 @@ module.exports = Part = {
    });
  },
 
- setRelativePosition: function (parent, part) {
-   part.parent = parent
-   part.x = parent.x + Math.cos(part.rotation) * part.length
-   part.y = parent.y + Math.sin(part.rotation) * part.length
+ setRelativePosition: function (parentTarget, part) {
+   return {
+     parentTarget,
+     part,
+     x: parentTarget.x + Math.cos(part.rotation) * part.length,
+     y: parentTarget.y + Math.sin(part.rotation) * part.length
+   }
  },
 
- getTargets: function (parent, part) {
+ getTargets: function (parentTarget, part) {
+   var target;
    if (!part) {
-     part = parent
-     part.x = part.translateY
-     part.y = part.translateX
+     part = parentTarget;
+     target = {
+       part: part,
+       x: part.translateY,
+       y: part.translateX,
+     }
    } else {
-     this.setRelativePosition(parent, part)
+     target = this.setRelativePosition(parentTarget, part)
    }
-   var targets = [].concat.apply([],(part.connectedTo || []).map(Part.getTargets.bind(this, part)))
+   var targets = [].concat.apply([],(part.connectedTo || []).map(Part.getTargets.bind(this, target)))
    if (part.length > 1) {
-     targets.push(part)
+     targets.push(target)
    }
    return targets
  },
 
  rotate: function (target, x, y) {
 
-   var distance = Math.sqrt(Math.pow(target.parent.x - x, 2) + Math.pow(target.parent.y - y, 2));
+   var distance = Math.sqrt(Math.pow(target.parentTarget.x - x, 2) + Math.pow(target.parentTarget.y - y, 2));
 
-   var angle = Math.acos((x - target.parent.x) / distance);
+   var angle = Math.acos((x - target.parentTarget.x) / distance);
 
-   var sin = (y - target.parent.y)/ distance;
+   var sin = (y - target.parentTarget.y)/ distance;
 
    if (sin < 0) {
      angle = -angle;
    }
 
-   target.rotation = angle;
+   target.part.rotation = angle;
 
  }
 

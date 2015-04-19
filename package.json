@@ -16,7 +16,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:jsx": "node_modules/watchify/bin/cmd.js -t [ reactify --es6 --target es5 ] src/main.js -o index.js -d -v",
-    "build:less": "node_modules/less/bin/lessc src/styles/main.less style.css "
+    "build:less": "node_modules/less/bin/lessc src/styles/main.less style.css ",
+    "move": "npm run build:dev:angular && cp m.angular.js ~/workspace/platform/web/csr/src/main/webapp/new/js/lib/"
   },
   "repository": {
     "type": "git",

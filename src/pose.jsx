@@ -25,6 +25,7 @@ class Pose extends React.Component {
 
   render () {
     var canvasWidth = 148;
+    var scale = canvasWidth / 736;
     var containerWidth = canvasWidth;
     var transitionLength;
     if (this.state.isUpdatingTransitionLength) {
@@ -43,7 +44,7 @@ class Pose extends React.Component {
         <Paper zDepth={this.state.isUpdatingTransitionLength ? 2 : 1}
           className="paper"
           onMouseDown={this.handleMouseDown}>
-          <PoseOnCanvas width={canvasWidth} actor={this.props.data} scale={0.18}></PoseOnCanvas>
+          <PoseOnCanvas width={canvasWidth} actor={this.props.data} scale={scale}></PoseOnCanvas>
 
 
           <FloatingActionButton

@@ -22,9 +22,15 @@ class Preview extends React.Component {
         <PoseOnCanvas id="preview-canvas" width={736}
           actor={this.state.pose || this.props.data[0]}></PoseOnCanvas>
 
-        <FloatingActionButton iconClassName="mdi mdi-play" id="play" onClick={this.play.bind(this)} secondary={true} />
+        <FloatingActionButton iconClassName="mdi mdi-pause" id="play" onClick={this.play.bind(this)} secondary={true} />
       </Paper>
     )
+  }
+
+  componentDidMount () {
+    if (this.props.data.length > 1) {
+      this.play()
+    }
   }
 
   play () {
@@ -50,9 +56,11 @@ class Preview extends React.Component {
 
       } else {
 
-        this.setState({
-          pose: this.props.data[0]
-        })
+        this.play()
+
+        // this.setState({
+        //   pose: this.props.data[0]
+        // })
 
       }
    }

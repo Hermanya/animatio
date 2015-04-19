@@ -46,11 +46,12 @@ class PoseOnCanvas extends React.Component {
     context.lineJoin = 'round';
     context.lineCap = 'round';
 
-    context.translate(actor.translateY, actor.translateX)
+    context.save();
     context.scale(actor.scale, actor.scale)
+    context.translate(actor.translateY, actor.translateX)
     context.strokeStyle = actor.color || 'rgba(0, 191, 165, 0.8)'
-
     draw(context, actor)
+    context.restore();
 
     context.restore();
   }

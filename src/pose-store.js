@@ -11,9 +11,6 @@ function getItemById(list,itemId){
 
 function setDefaults (pose) {
   pose.id = Date.now();
-  pose.transition = {
-    numberOfFrames: 30
-  }
 }
 
 function clone (item) {
@@ -41,6 +38,7 @@ module.exports = Reflux.createStore({
     this.updateList(this.list);
   },
   onAppend: function(item) {
+    setDefaults(item)
     this.updateList(this.list.concat([clone(item)]));
   },
   onInsertAfter: function(item, precedingId) {

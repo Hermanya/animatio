@@ -7,7 +7,6 @@ const React = require('react'),
   FloatingActionButton = mui.FloatingActionButton,
   Paper = mui.Paper,
   TextField = mui.TextField,
-  frames = JSON.parse(localStorage.frames || '[]'),
   poseStore = require('./pose-store.js')
 
 class SceneEditor extends React.Component {
@@ -19,13 +18,13 @@ class SceneEditor extends React.Component {
     }
   }
 
-  onFramesChange (poses) {
+  onPosesChange (poses) {
       this.setState({
         poses: poses
       })
   }
   componentDidMount () {
-      this.unsubscribe = poseStore.listen(this.onFramesChange.bind(this));
+      this.unsubscribe = poseStore.listen(this.onPosesChange.bind(this));
   }
   componentWillUnmount () {
       this.unsubscribe();

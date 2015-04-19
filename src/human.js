@@ -72,8 +72,8 @@ function Human () {
 
   rightFoot.translateX = 0;
   rightFoot.translateY = 10;
-
   rightFoot.scale = 0.9
+  rightFoot.transition = {numberOfFrames: 30}
 
   return rightFoot;
 }
