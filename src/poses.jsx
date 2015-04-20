@@ -12,50 +12,72 @@ Paper = mui.Paper
 
 class Poses extends React.Component {
 
+  constructor (props) {
+    super(props)
+    this.state = {
+      currentRole: props.data[0]
+    }
+  }
+
   render () {
 
-    const poses = this.props.data.map((pose, index) => {
+    const poses = this.state.currentRole.poses.map((pose, index) => {
+      var role = JSON.parse(JSON.stringify(this.state.currentRole))
+      role.currentPose = pose
       return (
-        <Pose data={pose} index={index} key={index} />
+        <Pose data={[role]} index={index} key={index} />
       )
     })
 
-    const actors = ['rgba(174, 242, 127, 0.8)', 'rgba(254, 226, 102, 0.8)'].map((color, index) => {
+    const actors = this.props.data.map((role, index) => {
 
 
+          // <FontIcon className="mdi mdi-account" title="{role.color}"/>
       return (
-          <FontIcon className="mdi mdi-account"/>
+          <FlatButton onClick={this.selectRole.bind(this, role)} primary={role === this.state.currentRole}>
+            [<FontIcon className="button-icon mdi mdi-account" style={{color: role.color + ' '}}/>]
+          </FlatButton>
       )
 
-      // <FloatingActionButton iconClassName="mdi mdi-account" style={{color: color}} mini={true}/>
-    })
+    }).concat([
+      <FlatButton onClick={this.addRole.bind(this)} >
+        [<FontIcon className="button-icon mdi mdi-plus"/>]
+      </FlatButton>
+    ])
+
 
     return (
       <section id="frames" className="clearfix">
 
-        <Toolbar>
-          <ToolbarGroup key={0} float="left">
+        <div>
             {actors}
-            <FontIcon className="mdi mdi-plus" />
+        </div>
 
-            <FlatButton label={'hide other actors'} />
-          </ToolbarGroup>
-          <ToolbarGroup>
-          </ToolbarGroup>
-        </Toolbar>
         {poses}
+
         <div id="push-frame-container">
-          <FloatingActionButton onClick={this.handleAdd.bind(this)} iconClassName="mdi mdi-plus" id="push-frame"/>
+          <FloatingActionButton onClick={this.addPose.bind(this)} iconClassName="mdi mdi-plus" id="push-frame"/>
         </div>
       </section>
     )
   }
 
-  handleAdd () {
-    var {router} = this.context;
-    router.transitionTo('/pose')
+  selectRole (role) {
+    this.setState({
+      currentRole: role
+    })
   }
-  
+
+
+  addPose () {
+    var {router} = this.context;
+    router.transitionTo('/role/' + this.state.currentRole.id + '/pose')
+  }
+
+  addRole () {
+
+  }
+
 }
 
 Poses.contextTypes = {

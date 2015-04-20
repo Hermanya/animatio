@@ -7,24 +7,24 @@ const React = require('react'),
   FloatingActionButton = mui.FloatingActionButton,
   Paper = mui.Paper,
   TextField = mui.TextField,
-  poseStore = require('./pose-store.js')
+  roleStore = require('./pose-store.js')
 
 class SceneEditor extends React.Component {
 
   constructor (props) {
     super(props)
     this.state = {
-        poses: poseStore.getInitialState()
+        roles: roleStore.getInitialState()
     }
   }
 
-  onPosesChange (poses) {
+  onRolesChange (roles) {
       this.setState({
-        poses: poses
+        roles: roles
       })
   }
   componentDidMount () {
-      this.unsubscribe = poseStore.listen(this.onPosesChange.bind(this));
+      this.unsubscribe = roleStore.listen(this.onRolesChange.bind(this));
   }
   componentWillUnmount () {
       this.unsubscribe();
@@ -40,9 +40,9 @@ class SceneEditor extends React.Component {
               hintText="Enter Title"
               floatingLabelText="Scene Title" />
           </header>
-          <Preview data={this.state.poses}/>
+          <Preview data={this.state.roles}/>
 
-          <Poses data={this.state.poses}/>
+          <Poses data={this.state.roles}/>
 
           <FloatingActionButton iconClassName="mdi mdi-check" id="complete" disabled />
           <FloatingActionButton iconClassName="mdi mdi-close" id="discard" disabled />

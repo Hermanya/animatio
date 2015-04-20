@@ -30,8 +30,8 @@ var routes = (
     <DefaultRoute handler={SceneEditor} />
     <Route name="scene-creator" path="scene" handler={SceneEditor} />
     <Route name="scene-editor" path="scene/:id" handler={SceneEditor} />
-    <Route name="pose-creator" path="pose" handler={PoseEditor} />
     <Route name="pose-editor" path="pose/:id" handler={PoseEditor} />
+    <Route name="pose-creator" path="role/:roleId/pose" handler={PoseEditor} />
   </Route>
 );
 

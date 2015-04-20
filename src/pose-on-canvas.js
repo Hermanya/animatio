@@ -3,7 +3,7 @@ draw = require('./render.js')
 
 
 
-class PoseOnCanvas extends React.Component {
+class FrameOnCanvas extends React.Component {
 
   render () {
     return (
@@ -34,7 +34,7 @@ class PoseOnCanvas extends React.Component {
   paint (context) {
     var element = React.findDOMNode(this.refs.canvas);
     var context = element.getContext('2d');
-    var actor = this.props.actor;
+    var roles = this.props.actor;
     var scalingValue = window.devicePixelRatio * (this.props.scale || 1);
     context.clearRect(0, 0, element.width, element.height);
 
@@ -46,12 +46,15 @@ class PoseOnCanvas extends React.Component {
     context.lineJoin = 'round';
     context.lineCap = 'round';
 
-    context.save();
-    context.scale(actor.scale, actor.scale)
-    context.translate(actor.translateY, actor.translateX)
-    context.strokeStyle = actor.color || 'rgba(0, 191, 165, 0.8)'
-    draw(context, actor)
-    context.restore();
+    roles.forEach(function (role) {
+      var pose = role.currentPose
+      context.save()
+      context.scale(pose.scale, pose.scale)
+      context.translate(pose.translateY, pose.translateX)
+      context.strokeStyle = role.color || 'rgba(0, 191, 165, 0.8)'
+      draw(context, pose)
+      context.restore()
+    })
 
     context.restore();
   }
@@ -62,4 +65,4 @@ class PoseOnCanvas extends React.Component {
 
 }
 
-module.exports = PoseOnCanvas;
+module.exports = FrameOnCanvas;

@@ -30,10 +30,18 @@
     background-color: white;
     #play {
       position: absolute;
-      bottom: @margin;
-      left: @margin;
+      top: @margin;
+      right: @margin;
+    }
+    .mui-input {
+      position: absolute;
+      bottom: 0px;
+      width: 100%;
+      margin-bottom: 0 !important;
     }
 }
+
+
 
 #complete {
   position: fixed;
@@ -78,4 +86,14 @@ canvas {
   display:table;
   clear:both;
   content:""
+}
+
+
+.button-icon {
+  height: 100%;
+  display: inline-block;
+  vertical-align: middle;
+  float: none !important;
+  padding-left: 0 !important;
+  line-height: 36px !important;
 }

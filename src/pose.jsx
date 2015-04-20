@@ -29,7 +29,7 @@ class Pose extends React.Component {
     if (this.state.isUpdatingTransitionLength) {
       transitionLength = this.state.intermidiateLength
     } else {
-      transitionLength = this.props.data.transition.numberOfFrames
+      transitionLength = this.props.data[0].currentPose.transition.numberOfFrames
     }
     var transitionElement;
     if (this.props.index) { // first pose does not have a transition
@@ -41,7 +41,7 @@ class Pose extends React.Component {
 
     if (!this.state.style) {
       actions.push(<FloatingActionButton
-        onClick={poseActions.delete.bind(this, this.props.data.id)}
+        onClick={poseActions.delete.bind(this, this.props.data[0].currentPose.id)}
         iconClassName="mdi mdi-delete"
         className="delete"
         mini={true}/>)
@@ -51,6 +51,7 @@ class Pose extends React.Component {
           onClick={this.handleEdit.bind(this)}
           iconClassName="mdi mdi-pencil"
           className="edit"
+          secondary={true}
           mini={true}/>)
     }
     return (
@@ -72,7 +73,7 @@ class Pose extends React.Component {
   handleMouseDown () {
     this.setState({
       isUpdatingTransitionLength: true,
-      intermidiateLength: this.props.data.transition.numberOfFrames
+      intermidiateLength: this.props.data[0].currentPose.transition.numberOfFrames
     });
 
     document.addEventListener('mousemove', this.handleMouseMove);
@@ -93,7 +94,7 @@ class Pose extends React.Component {
     document.removeEventListener('mouseup', this.handleMouseUp)
     var newValue = this.state.intermidiateLength
 
-    poseActions.updateTransition(this.props.data.id, newValue);
+    poseActions.updateTransition(this.props.data[0].currentPose.id, newValue);
     window.setTimeout(() => {
       this.setState({
         isUpdatingTransitionLength: false
@@ -104,7 +105,7 @@ class Pose extends React.Component {
 
   handleEdit () {
     var {router} = this.context;
-    router.transitionTo('/pose/' + this.props.data.id)
+    router.transitionTo('/pose/' + this.props.data[0].currentPose.id)
   }
 
 }

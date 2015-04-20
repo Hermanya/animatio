@@ -16,8 +16,10 @@ class PoseEditor extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      pose: human()
+      pose: human(),
+      roles: []
     }
+    poseStore.getInitialState()
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
@@ -26,13 +28,24 @@ class PoseEditor extends React.Component {
   componentDidMount () {
     var { router } = this.context;
     var id = parseInt(router.getCurrentParams().id);
+    var roleId = parseInt(router.getCurrentParams().roleId);
 
-    var pose = poseStore.getInitialState().filter(function (pose) {
-      return pose.id === id;
-    })[0] || human()
+    var pose, role;
+
+    if (id) {
+      pose = poseStore.getPoseById(id)
+      role = poseStore.getRoleByPoseId(id)
+    } else if (roleId) {
+      pose = human()
+      role = poseStore.getRoleById(roleId)
+    }
+
+    role.currentPose = pose;
 
     this.setState({
-      pose
+      roles: [role],
+      pose,
+      roleId
     })
   }
 
@@ -46,9 +59,9 @@ class PoseEditor extends React.Component {
     }
 //
     return (
-      <Paper zDepth={1} ref="editor" style={{position: 'fixed', top: 0, left: 0}} id="pose-editor" onMouseDown={this.handleMouseDown} >
+      <Paper zDepth={1} ref="editor" style={{position: 'absolute', top: 0, left: 0}} id="pose-editor" onMouseDown={this.handleMouseDown} >
         <PoseOnCanvas width={width}
-          actor={this.state.pose}
+          actor={this.state.roles}
           scale={this.state.canvasScale}
           ></PoseOnCanvas>
 
@@ -117,7 +130,7 @@ class PoseEditor extends React.Component {
     if (this.state.pose.id) {
       poseActions.update(this.state.pose)
     } else {
-      poseActions.append(this.state.pose)
+      poseActions.append(this.state.pose, this.state.roleId)
     }
     this.back.call(this)
   }
