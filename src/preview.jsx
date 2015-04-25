@@ -1,19 +1,18 @@
 const React = require('react'),
-render = require('./render.js'),
 mui = require('material-ui'),
 human = require('./human.js'),
 part = require('./part.js'),
 FloatingActionButton = mui.FloatingActionButton,
 Slider = mui.Slider,
 Paper = mui.Paper,
-PoseOnCanvas = require('./pose-on-canvas.js')
+PoseOnCanvas = require('./pose-on-canvas.js');
+var isMounted;
 
 class Preview extends React.Component {
 
   constructor (props) {
     super(props)
     this.state = {
-      roles: props.data,
       currentRoles: props.data.map((role) => {
         role.currentPose = role.poses[0]
         return role
@@ -23,15 +22,19 @@ class Preview extends React.Component {
     }
   }
 
+  componentWillReceiveProps (props) {
+    this.setState ({
+      currentRoles: props.data.map((role) => {
+        role.currentPose = role.poses[0]
+        return role
+      }),
+      overallFrameNumber: 0,
+      isPlaying: false
+    })
+  }
+
   render () {
-    var totalNumberOfFrames = Math.max.apply(Math, this.props.data.map((role) => {
-      return role.poses.reduce((x, pose, index) => {
-        if (index) {
-          return x + pose.transition.numberOfFrames
-        }
-        return x
-      }, 0)
-    }))
+    var totalNumberOfFrames = this.getTotalNumberOfFrames.call(this);
     var action;
 
     if (this.state.isPlaying) {
@@ -47,15 +50,38 @@ class Preview extends React.Component {
         <PoseOnCanvas id="preview-canvas" width={736}
           actor={this.state.currentRoles}></PoseOnCanvas>
         {action}
-        <Slider name="slider1" className="preview-progress" value={this.state.overallFrameNumber / totalNumberOfFrames}/>
+        <Slider name="progress" ref="progress" onChange={this.updateProgress.bind(this)} className="preview-progress" value={this.state.overallFrameNumber / totalNumberOfFrames}/>
       </Paper>
     )
   }
 
   componentDidMount () {
-    // if (this.props.data.length > 1) {
-    //   this.play()
-    // }
+    isMounted = true
+  }
+
+  componentWillUnmount () {
+    isMounted = false
+    this.pause.call(this)
+  }
+
+  getTotalNumberOfFrames () {
+    return Math.max.apply(Math, this.props.data.map((role) => {
+     return role.poses.reduce((x, pose, index) => {
+       if (index) {
+         return x + pose.transition.numberOfFrames
+       }
+       return x
+     }, 0)
+   }))
+  }
+
+  updateProgress (event, value) {
+  ///  console.log(value)
+    this.setState({
+        isPlaying: false,
+        overallFrameNumber: value  * this.getTotalNumberOfFrames.call(this)
+    })
+    this.showNextFrame.call(this)
   }
 
   play () {
@@ -104,54 +130,21 @@ class Preview extends React.Component {
       }
     }).filter((currentRole) => currentRole !== undefined)
 
-    if (currentRoles.length === 0) {
-      this.setState({
-        overallFrameNumber: 0
-      })
-    } else {
-      this.setState({
-        overallFrameNumber: overallFrameNumber + 1,
-        currentRoles
-      })
-    }
+    if (this.state.isPlaying && isMounted) {
 
-    if (this.state.isPlaying) {
+      if (currentRoles.length === 0) {
+        this.setState({
+          overallFrameNumber: 0
+        })
+      } else {
+        this.setState({
+          overallFrameNumber: overallFrameNumber + 1,
+          currentRoles
+        })
+      }
+
       window.requestAnimationFrame(this.showNextFrame.bind(this));
     }
-
-
-
-  //   var poseNumber = 0;
-  //   var poses = this.props.data;
-   //
-  //   var transition = (from, to, frameNumber) => {
-  //     var numberOfFrames = to.transition.numberOfFrames;
-   //
-  //     if (frameNumber !== numberOfFrames) {
-   //
-  //       var pose = part.mapOverTwoParts(from, to, part.getIntermediatePart.bind(undefined, frameNumber/numberOfFrames));
-  //       this.setState({
-  //         pose: pose
-  //       })
-  //       window.requestAnimationFrame(transition.bind(undefined, from, to, frameNumber + 1));
-   //
-  //     } else if (poseNumber + 1 !== poses.length - 1) {
-   //
-  //       poseNumber++;
-  //       transition(poses[poseNumber], poses[poseNumber + 1], 0)
-   //
-  //     } else {
-   //
-  //       this.play()
-   //
-  //       // this.setState({
-  //       //   pose: this.props.data[0]
-  //       // })
-   //
-  //     }
-  //  }
-   //
-  //  transition(poses[poseNumber], poses[poseNumber + 1], 0);
   }
 
 

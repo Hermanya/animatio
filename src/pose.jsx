@@ -1,7 +1,6 @@
 const React = require('react'),
-draw = require('./render.js'),
 mui = require('material-ui'),
-poseActions = require('./pose-actions.js'),
+actions = require('./new-scene-actions.js'),
 Paper = mui.Paper,
 FloatingActionButton = mui.FloatingActionButton,
 PoseOnCanvas = require('./pose-on-canvas.js')
@@ -12,9 +11,6 @@ class Pose extends React.Component {
     super(props);
     this.state = {
       isUpdatingTransitionLength: false
-    };
-    this.contextTypes = {
-      router: React.PropTypes.func
     };
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
@@ -29,41 +25,45 @@ class Pose extends React.Component {
     if (this.state.isUpdatingTransitionLength) {
       transitionLength = this.state.intermidiateLength
     } else {
-      transitionLength = this.props.data[0].currentPose.transition.numberOfFrames
+      transitionLength = this.props.data.transition.numberOfFrames
     }
-    var transitionElement;
+    var transitionElement, transitionButton;
     if (this.props.index) { // first pose does not have a transition
       transitionElement = <div className="transition-length-line" style={{width: transitionLength + 'px'}}></div>
       containerWidth = (canvasWidth + transitionLength + 2) + 'px';
+
+      transitionButton =  (<FloatingActionButton
+        iconClassName="mdi mdi-swap-horizontal"
+        className="update-number-of-frames"
+        mini={true}
+        secondary={true}
+        onMouseDown={this.handleMouseDown}/>)
     }
 
-    var actions = [];
-
-    if (!this.state.style) {
-      actions.push(<FloatingActionButton
-        onClick={poseActions.delete.bind(this, this.props.data[0].currentPose.id)}
-        iconClassName="mdi mdi-delete"
-        className="delete"
-        mini={true}/>)
-
-      actions.push(
-        <FloatingActionButton
-          onClick={this.handleEdit.bind(this)}
-          iconClassName="mdi mdi-pencil"
-          className="edit"
-          secondary={true}
-          mini={true}/>)
-    }
+    var role = JSON.parse(JSON.stringify(this.props.role))
+    role.currentPose = this.props.data;
     return (
       <div className="pose-container" style={{width: containerWidth}}>
         {transitionElement}
         <Paper zDepth={this.state.isUpdatingTransitionLength ? 2 : 1}
           className="paper" ref="pose"
-          style={this.state.style}
-          onMouseDown={this.handleMouseDown}>
-          <PoseOnCanvas width={canvasWidth} actor={this.props.data} scale={this.state.scale || scale}></PoseOnCanvas>
+          style={this.state.style}>
+          <PoseOnCanvas width={canvasWidth} actor={[role]} scale={this.state.scale || scale}></PoseOnCanvas>
 
-          {actions}
+          <FloatingActionButton
+            onClick={actions.deletePose.bind(this, this.props.role.id, this.props.data)}
+            iconClassName="mdi mdi-delete"
+            className="delete"
+            mini={true}/>
+
+            {transitionButton}
+
+            <FloatingActionButton
+              onClick={this.handleEdit.bind(this)}
+              iconClassName="mdi mdi-pencil"
+              className="edit"
+              secondary={true}
+              mini={true}/>
 
         </Paper>
       </div>
@@ -73,7 +73,7 @@ class Pose extends React.Component {
   handleMouseDown () {
     this.setState({
       isUpdatingTransitionLength: true,
-      intermidiateLength: this.props.data[0].currentPose.transition.numberOfFrames
+      intermidiateLength: this.props.data.transition.numberOfFrames
     });
 
     document.addEventListener('mousemove', this.handleMouseMove);
@@ -92,9 +92,10 @@ class Pose extends React.Component {
   handleMouseUp () {
     document.removeEventListener('mousemove', this.handleMouseMove)
     document.removeEventListener('mouseup', this.handleMouseUp)
-    var newValue = this.state.intermidiateLength
+    var pose = JSON.parse(JSON.stringify(this.props.data))
+    pose.transition.numberOfFrames = this.state.intermidiateLength
 
-    poseActions.updateTransition(this.props.data[0].currentPose.id, newValue);
+    actions.updatePose(this.props.role.id, pose);
     window.setTimeout(() => {
       this.setState({
         isUpdatingTransitionLength: false
@@ -103,9 +104,11 @@ class Pose extends React.Component {
 
   }
 
-  handleEdit () {
+  handleEdit (event) {
+    event.stopPropagation();
     var {router} = this.context;
-    router.transitionTo('/pose/' + this.props.data[0].currentPose.id)
+
+    router.transitionTo('/role/' + this.props.role.id + '/pose/' + this.props.data.id)
   }
 
 }

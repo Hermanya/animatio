@@ -29,8 +29,8 @@ var routes = (
   <Route handler={App} path="/">
     <DefaultRoute handler={SceneEditor} />
     <Route name="scene-creator" path="scene" handler={SceneEditor} />
-    <Route name="scene-editor" path="scene/:id" handler={SceneEditor} />
-    <Route name="pose-editor" path="pose/:id" handler={PoseEditor} />
+    <Route name="scene-editor" path="scene/role/:roleId" handler={SceneEditor} />
+    <Route name="pose-editor" path="role/:roleId/pose/:poseId" handler={PoseEditor} />
     <Route name="pose-creator" path="role/:roleId/pose" handler={PoseEditor} />
   </Route>
 );

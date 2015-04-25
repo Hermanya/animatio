@@ -22,14 +22,14 @@ module.exports = Part = {
 
     var otherProps = ['length', 'width', 'translateX', 'translateY', 'scale']
     otherProps.forEach(function (prop) {
-      if (dad[prop]) {
+      if (dad[prop] !== undefined) {
         child[prop] = (dad[prop] - mom[prop]) * similarityToDad + mom[prop]
       }
     })
 
     return child;
   },
-  renderPart: function (part, context) {
+  renderPart: function (context, part) {
    var x = Math.cos(part.rotation) * part.length,
        y = Math.sin(part.rotation) * part.length
 
@@ -41,7 +41,7 @@ module.exports = Part = {
    context.stroke();
    (part.connectedTo || []).forEach(function (part) {
      context.save();
-     Part.renderPart(part, context);
+     Part.renderPart(context, part);
      context.restore();
    });
  },

@@ -1,5 +1,5 @@
-const React = require('react'),
-poseActions = require('./pose-actions.js'),
+var React = require('react'),
+actions = require('./new-scene-actions.js'),
 mui = require('material-ui'),
 Pose = require('./pose.jsx'),
 FloatingActionButton = mui.FloatingActionButton,
@@ -14,36 +14,33 @@ class Poses extends React.Component {
 
   constructor (props) {
     super(props)
-    this.state = {
-      currentRole: props.data[0]
-    }
   }
 
   render () {
 
-    const poses = this.state.currentRole.poses.map((pose, index) => {
-      var role = JSON.parse(JSON.stringify(this.state.currentRole))
-      role.currentPose = pose
+    var poses = this.props.selectedRole.poses.map((pose, index) => {
       return (
-        <Pose data={[role]} index={index} key={index} />
+        <Pose data={pose} index={index} key={index} role={this.props.selectedRole}/>
       )
     })
 
-    const actors = this.props.data.map((role, index) => {
+    var actors = this.props.data.map((role, index) => {
 
-
-          // <FontIcon className="mdi mdi-account" title="{role.color}"/>
       return (
-          <FlatButton onClick={this.selectRole.bind(this, role)} primary={role === this.state.currentRole}>
+          <FlatButton key={index} onClick={this.selectRole.bind(this, role)} draggable="true" primary={role === this.props.selectedRole}>
             [<FontIcon className="button-icon mdi mdi-account" style={{color: role.color + ' '}}/>]
           </FlatButton>
       )
 
     }).concat([
-      <FlatButton onClick={this.addRole.bind(this)} >
+      <FlatButton onClick={this.addRole.bind(this)} key={'add'} >
         [<FontIcon className="button-icon mdi mdi-plus"/>]
       </FlatButton>
     ])
+
+    actors = ([<FlatButton onClick={this.deleteRole.bind(this)} key={'delete'}>
+      [<FontIcon className="button-icon mdi mdi-delete"/>]
+    </FlatButton>]).concat(actors)
 
 
     return (
@@ -63,19 +60,26 @@ class Poses extends React.Component {
   }
 
   selectRole (role) {
-    this.setState({
-      currentRole: role
-    })
+    this.context.router.transitionTo('/scene/role/' + role.id)
   }
 
 
   addPose () {
-    var {router} = this.context;
-    router.transitionTo('/role/' + this.state.currentRole.id + '/pose')
+    this.context.router.transitionTo('/role/' + this.props.data.indexOf(this.props.selectedRole) + '/pose')
   }
 
   addRole () {
+    actions.addRole();
+    window.setTimeout(
+      this.context.router.transitionTo.bind(this.context.router.transitionTo, '/scene/role/' + this.props.data.length)
+    )
+  }
 
+  deleteRole () {
+    actions.deleteRole(this.props.selectedRole)
+    window.setTimeout(
+      this.context.router.transitionTo.bind(this.context.router.transitionTo, '/scene')
+    )
   }
 
 }

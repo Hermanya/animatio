@@ -24,7 +24,14 @@
   float: right;
 }
 
-#preview, #pose-editor {
+#pose-editor {
+  background-color: #eee;
+  canvas {
+    background-color: white;
+  }
+}
+
+#preview {
     position: relative;
     display: inline-block;
     background-color: white;
@@ -60,7 +67,10 @@
     max-width: 900px;
     margin: 24px auto;
     text-align: center;
-    // background-color: #eee;
+    background-color: #eee;
+    .mui-flat-button {
+      background-color: inherit;
+    }
 }
 
 canvas {

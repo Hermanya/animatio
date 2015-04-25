@@ -1,5 +1,4 @@
 const React = require('react'),
-render = require('./render.js'),
 mui = require('material-ui'),
 human = require('./human.js'),
 part = require('./part.js'),
@@ -7,8 +6,8 @@ FloatingActionButton = mui.FloatingActionButton,
 RaisedButton = mui.RaisedButton,
 Paper = mui.Paper,
 PoseOnCanvas = require('./pose-on-canvas.js'),
-poseStore = require('./pose-store.js'),
-poseActions = require('./pose-actions.js')
+store = require('./new-scene-store.js'),
+actions = require('./new-scene-actions.js')
 
 
 class PoseEditor extends React.Component {
@@ -19,34 +18,45 @@ class PoseEditor extends React.Component {
       pose: human(),
       roles: []
     }
-    poseStore.getInitialState()
+    store.getInitialState()
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
+    this.handleMouseWheel = this.handleMouseWheel.bind(this);
   }
 
   componentDidMount () {
     var { router } = this.context;
-    var id = parseInt(router.getCurrentParams().id);
+    var poseId = router.getCurrentParams().poseId;
     var roleId = parseInt(router.getCurrentParams().roleId);
 
     var pose, role;
 
-    if (id) {
-      pose = poseStore.getPoseById(id)
-      role = poseStore.getRoleByPoseId(id)
-    } else if (roleId) {
+    if (poseId === undefined) {
+      poseId = parseInt(poseId);
+      role = store.getRole(roleId)
       pose = human()
-      role = poseStore.getRoleById(roleId)
+    } else {
+      role = store.getRole(roleId)
+      pose = store.getPose(roleId, poseId)
     }
 
     role.currentPose = pose;
 
+    var oldRole = JSON.parse(JSON.stringify(role))
+    oldRole.color = 'rgba(222, 222, 222, 0.5)'
+debugger
     this.setState({
-      roles: [role],
+      roles: store.roles.concat([oldRole, role]),
       pose,
       roleId
     })
+
+    window.addEventListener('mousewheel', this.handleMouseWheel)
+  }
+
+  componentWillUnmount () {
+    window.removeEventListener('mousewheel', this.handleMouseWheel)
   }
 
   render () {
@@ -54,15 +64,21 @@ class PoseEditor extends React.Component {
     this.state.canvasScale = width / 736;
 
     var maybeSaveAsNext;
-    if (this.state.pose.id) {
+    if (this.state.pose.id !== undefined) {
       maybeSaveAsNext = <RaisedButton onClick={this.saveAsNext.bind(this)} label="save as next pose" className="pose-editor-button" />
     }
 //
     return (
-      <Paper zDepth={1} ref="editor" style={{position: 'absolute', top: 0, left: 0}} id="pose-editor" onMouseDown={this.handleMouseDown} >
+      <Paper zDepth={1} ref="editor"
+        style={{position: 'absolute', top: 0, left: 0}}
+        id="pose-editor"
+        onMouseDown={this.handleMouseDown}
+        >
         <PoseOnCanvas width={width}
           actor={this.state.roles}
           scale={this.state.canvasScale}
+          targets={Part.getTargets(this.state.pose)}
+          pose={this.state.pose}
           ></PoseOnCanvas>
 
           <FloatingActionButton iconClassName="mdi mdi-check" onClick={this.save.bind(this)} className="pose-editor-button" mini={true} />
@@ -113,8 +129,8 @@ class PoseEditor extends React.Component {
     var {x, y} = this.getCursorCoordinates();
 
     if (event.shiftKey || event.ctrlKey || event.altKey) {
-      this.state.pose.translateX = x
-      this.state.pose.translateY = y
+      this.state.pose.translateX += event.movementX
+      this.state.pose.translateY -= event.movementY
     } else {
       Part.rotate(this.state.target, y, x)
     }
@@ -126,23 +142,32 @@ class PoseEditor extends React.Component {
     document.removeEventListener('mouseup', this.handleMouseUp)
   }
 
+  handleMouseWheel (event) {
+    if (event.shiftKey || event.ctrlKey || event.altKey) {
+      event.preventDefault()
+
+      this.state.pose.scale += event.wheelDelta /1000
+      this.forceUpdate()
+    }
+  }
+
   save () {
-    if (this.state.pose.id) {
-      poseActions.update(this.state.pose)
+    if (this.state.pose.id === undefined) {
+      actions.appendPose(this.state.roleId, this.state.pose, this.state.roleId)
     } else {
-      poseActions.append(this.state.pose, this.state.roleId)
+      actions.updatePose(this.state.roleId, this.state.pose)
     }
     this.back.call(this)
   }
 
   saveAsNext () {
-    poseActions.insertAfter(this.state.pose);
+    actions.insertPoseAfter(this.state.roleId, this.state.pose);
     this.back.call(this)
   }
 
   back () {
     var {router} = this.context;
-    router.transitionTo('/scene')
+    router.transitionTo('/scene/role/' + this.state.roleId)
   }
 
 }

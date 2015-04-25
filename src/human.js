@@ -62,8 +62,8 @@ function Human () {
   })
 
   belly.translateX = 0;
-  belly.translateY = 230;
-  belly.scale = 0.9
+  belly.translateY = 250;
+  belly.scale = 0.8
   belly.transition = {numberOfFrames: 30}
 
   return belly;
@@ -118,7 +118,7 @@ function shoulder (part) {
 function leg (options) {
   var sign = options.isLeft ? 1 : -1;
   return hip({
-    rotation: Math.PI/3*sign,
+    rotation: Math.PI*2/3*sign,
     connectedTo: [thigh({
       rotation: Math.PI/36*35*sign,
       connectedTo: [calf({

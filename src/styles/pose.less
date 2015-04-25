@@ -11,7 +11,6 @@
   .paper {
     background-color: white;
     float: left;
-    cursor: col-resize;
     position: relative;
     .delete {
       position: absolute;
@@ -25,10 +24,20 @@
       right: -8px;
       display: none;
     }
+    .update-number-of-frames {
+      position: absolute;
+      bottom: 23px;
+      left: -8px;
+      display: none;
+      cursor: col-resize !important;
+    }
     &:hover .delete {
       display: block;
     }
     &:hover .edit {
+      display: block;
+    }
+    &:hover .update-number-of-frames {
       display: block;
     }
   }

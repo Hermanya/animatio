@@ -2637,7 +2637,6 @@ hr {
 .pose-container .paper {
   background-color: white;
   float: left;
-  cursor: col-resize;
   position: relative;
 }
 .pose-container .paper .delete {
@@ -2652,10 +2651,20 @@ hr {
   right: -8px;
   display: none;
 }
+.pose-container .paper .update-number-of-frames {
+  position: absolute;
+  bottom: 23px;
+  left: -8px;
+  display: none;
+  cursor: col-resize !important;
+}
 .pose-container .paper:hover .delete {
   display: block;
 }
 .pose-container .paper:hover .edit {
+  display: block;
+}
+.pose-container .paper:hover .update-number-of-frames {
   display: block;
 }
 .no-highlighting {
@@ -2670,20 +2679,23 @@ hr {
   margin: 16px;
   float: right;
 }
-#preview,
 #pose-editor {
+  background-color: #eee;
+}
+#pose-editor canvas {
+  background-color: white;
+}
+#preview {
   position: relative;
   display: inline-block;
   background-color: white;
 }
-#preview #play,
-#pose-editor #play {
+#preview #play {
   position: absolute;
   top: 16px;
   right: 16px;
 }
-#preview .mui-input,
-#pose-editor .mui-input {
+#preview .mui-input {
   position: absolute;
   bottom: 0px;
   width: 100%;
@@ -2703,6 +2715,10 @@ hr {
   max-width: 900px;
   margin: 24px auto;
   text-align: center;
+  background-color: #eee;
+}
+#page .mui-flat-button {
+  background-color: inherit;
 }
 canvas {
   display: block;
