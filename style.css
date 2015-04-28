@@ -5,6 +5,7 @@
  * 2. Prevent iOS text size adjust after orientation change, without disabling
  *    user zoom.
  */
+@import "node_modules/mdi/css/materialdesignicons.css";
 html {
   font-family: sans-serif;
   /* 1 */
@@ -2667,24 +2668,6 @@ hr {
 .pose-container .paper:hover .update-number-of-frames {
   display: block;
 }
-.no-highlighting {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-.pose-editor-button {
-  margin: 16px;
-  float: right;
-}
-#pose-editor {
-  background-color: #eee;
-}
-#pose-editor canvas {
-  background-color: white;
-}
 #preview {
   position: relative;
   display: inline-block;
@@ -2701,6 +2684,13 @@ hr {
   width: 100%;
   margin-bottom: 0 !important;
 }
+#poses {
+  padding: 16px;
+}
+#poses #append-pose-wrapper {
+  float: left;
+  padding: 33px 53px;
+}
 #complete {
   position: fixed;
   right: 16px;
@@ -2710,6 +2700,34 @@ hr {
   position: fixed;
   left: 16px;
   top: 16px;
+}
+.pose-editor-button {
+  margin: 16px;
+  float: right;
+}
+#pose-editor {
+  background-color: #eee;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+#pose-editor canvas {
+  background-color: white;
+}
+#hints {
+  position: absolute;
+  z-index: 2;
+  text-align: left;
+  list-style: none;
+  margin: 16px;
+}
+.no-highlighting {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 #page {
   max-width: 900px;
@@ -2722,16 +2740,6 @@ hr {
 }
 canvas {
   display: block;
-}
-#frames {
-  padding: 16px;
-}
-#frames .frame {
-  float: left;
-}
-#frames #push-frame-container {
-  float: left;
-  padding: 33px 53px;
 }
 .clearfix:before {
   display: table;

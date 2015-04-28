@@ -1,27 +1,24 @@
 const React = require('react'),
-mui = require('material-ui'),
 actions = require('./new-scene-actions.js'),
-Paper = mui.Paper,
-FloatingActionButton = mui.FloatingActionButton,
-PoseOnCanvas = require('./pose-on-canvas.js')
+{ FloatingActionButton, Paper } = require('material-ui'),
+Frame = require('./frame.js')
 
 class Pose extends React.Component {
 
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       isUpdatingTransitionLength: false
-    };
-    this.handleMouseDown = this.handleMouseDown.bind(this);
-    this.handleMouseMove = this.handleMouseMove.bind(this);
-    this.handleMouseUp = this.handleMouseUp.bind(this);
+    }
+    this.handleMouseDown = this.handleMouseDown.bind(this)
+    this.handleMouseMove = this.handleMouseMove.bind(this)
+    this.handleMouseUp = this.handleMouseUp.bind(this)
   }
 
   render () {
-    var canvasWidth = 148;
-    var scale = canvasWidth / 736;
-    var containerWidth = canvasWidth;
-    var transitionLength;
+    var canvasWidth = 148
+    var containerWidth = canvasWidth
+    var transitionLength
     if (this.state.isUpdatingTransitionLength) {
       transitionLength = this.state.intermidiateLength
     } else {
@@ -48,22 +45,22 @@ class Pose extends React.Component {
         <Paper zDepth={this.state.isUpdatingTransitionLength ? 2 : 1}
           className="paper" ref="pose"
           style={this.state.style}>
-          <PoseOnCanvas width={canvasWidth} actor={[role]} scale={this.state.scale || scale}></PoseOnCanvas>
+          <Frame width={canvasWidth} roles={[role]} />
 
           <FloatingActionButton
-            onClick={actions.deletePose.bind(this, this.props.role.id, this.props.data)}
+            onClick={this.delete.bind(this)}
             iconClassName="mdi mdi-delete"
             className="delete"
             mini={true}/>
 
-            {transitionButton}
+          {transitionButton}
 
-            <FloatingActionButton
-              onClick={this.handleEdit.bind(this)}
-              iconClassName="mdi mdi-pencil"
-              className="edit"
-              secondary={true}
-              mini={true}/>
+          <FloatingActionButton
+            onClick={this.edit.bind(this)}
+            iconClassName="mdi mdi-pencil"
+            className="edit"
+            secondary={true}
+            mini={true}/>
 
         </Paper>
       </div>
@@ -101,14 +98,14 @@ class Pose extends React.Component {
         isUpdatingTransitionLength: false
       })
     }, 0)
-
   }
 
-  handleEdit (event) {
-    event.stopPropagation();
-    var {router} = this.context;
+  delete () {
+    actions.deletePose.bind(this, this.props.role.id, this.props.data)
+  }
 
-    router.transitionTo('/role/' + this.props.role.id + '/pose/' + this.props.data.id)
+  edit (event) {
+    this.context.router.transitionTo('/role/' + this.props.role.id + '/pose/' + this.props.data.id)
   }
 
 }

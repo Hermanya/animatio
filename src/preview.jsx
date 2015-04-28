@@ -1,22 +1,16 @@
-const React = require('react'),
-mui = require('material-ui'),
+var React = require('react'),
 human = require('./human.js'),
-part = require('./part.js'),
-FloatingActionButton = mui.FloatingActionButton,
-Slider = mui.Slider,
-Paper = mui.Paper,
-PoseOnCanvas = require('./pose-on-canvas.js');
-var isMounted;
+util = require('./util.js'),
+Frame = require('./frame.js'),
+{ FloatingActionButton, Paper, Slider } = require('material-ui'),
+isMounted
 
 class Preview extends React.Component {
 
   constructor (props) {
     super(props)
     this.state = {
-      currentRoles: props.data.map((role) => {
-        role.currentPose = role.poses[0]
-        return role
-      }),
+      currentRoles: [],
       overallFrameNumber: 0,
       isPlaying: false
     }
@@ -27,30 +21,39 @@ class Preview extends React.Component {
       currentRoles: props.data.map((role) => {
         role.currentPose = role.poses[0]
         return role
-      }),
-      overallFrameNumber: 0,
-      isPlaying: false
+      })
     })
   }
 
   render () {
-    var totalNumberOfFrames = this.getTotalNumberOfFrames.call(this);
+    var totalNumberOfFrames = util.getTotalNumberOfFrames(this.props.data)
     var action;
 
     if (this.state.isPlaying) {
-      action = <FloatingActionButton iconClassName="mdi mdi-pause" id="play" onClick={this.pause.bind(this)} secondary={true} />
+      action = (<FloatingActionButton
+        iconClassName="mdi mdi-pause"
+        id="play"
+        onClick={this.pause.bind(this)}
+        secondary={true} />)
     } else {
-      action = <FloatingActionButton iconClassName="mdi mdi-play" id="play" onClick={this.play.bind(this)} secondary={true} />
-
+      action = (<FloatingActionButton
+        iconClassName="mdi mdi-play"
+        id="play"
+        onClick={this.play.bind(this)}
+        secondary={true} />)
     }
-
 
     return (
       <Paper zDepth={1}  id="preview">
-        <PoseOnCanvas id="preview-canvas" width={736}
-          actor={this.state.currentRoles}></PoseOnCanvas>
+        <Frame id="preview-canvas"
+          width={736}
+          roles={this.state.currentRoles} />
         {action}
-        <Slider name="progress" ref="progress" onChange={this.updateProgress.bind(this)} className="preview-progress" value={this.state.overallFrameNumber / totalNumberOfFrames}/>
+        <Slider
+          name="progress"
+          onChange={this.updateProgress.bind(this)}
+          className="preview-progress"
+          value={this.state.overallFrameNumber / totalNumberOfFrames}/>
       </Paper>
     )
   }
@@ -61,27 +64,15 @@ class Preview extends React.Component {
 
   componentWillUnmount () {
     isMounted = false
-    this.pause.call(this)
-  }
-
-  getTotalNumberOfFrames () {
-    return Math.max.apply(Math, this.props.data.map((role) => {
-     return role.poses.reduce((x, pose, index) => {
-       if (index) {
-         return x + pose.transition.numberOfFrames
-       }
-       return x
-     }, 0)
-   }))
+    this.pause()
   }
 
   updateProgress (event, value) {
-  ///  console.log(value)
     this.setState({
         isPlaying: false,
-        overallFrameNumber: value  * this.getTotalNumberOfFrames.call(this)
+        overallFrameNumber: value  * util.getTotalNumberOfFrames(this.props.data)
     })
-    this.showNextFrame.call(this)
+    this.showNextFrame()
   }
 
   play () {
@@ -89,7 +80,6 @@ class Preview extends React.Component {
       isPlaying: true
     })
     window.setTimeout(this.showNextFrame.bind(this))
-
   }
 
   pause () {
@@ -99,39 +89,11 @@ class Preview extends React.Component {
   }
 
   showNextFrame() {
-
-    var overallFrameNumber = this.state.overallFrameNumber;
-
-    var currentRoles = this.props.data.map(function (role) {
-      var from, to, progress;
-
-      role.poses.reduce(function (frameNumber, pose, index) {
-        if (index === 0) {
-          from = pose;
-          return frameNumber;
-        } else if (to) {
-          return;
-        }
-        if (frameNumber > pose.transition.numberOfFrames) {
-          from = pose;
-          return frameNumber - pose.transition.numberOfFrames;
-        } else {
-          to = pose;
-          progress = frameNumber / pose.transition.numberOfFrames;
-        }
-      }, overallFrameNumber)
-
-      if (from && to) {
-        role.currentPose = part.mapOverTwoParts(from, to, part.getIntermediatePart.bind(undefined, progress));
-        return role;
-      } else if (role.poses.length === 1){
-        role.currentPose = role.poses[0];
-        //return role;
-      }
-    }).filter((currentRole) => currentRole !== undefined)
+    var overallFrameNumber = this.state.overallFrameNumber
+    var allRoles = this.props.data
+    var currentRoles = util.getRolesAtFrameNumber(overallFrameNumber, allRoles)
 
     if (this.state.isPlaying && isMounted) {
-
       if (currentRoles.length === 0) {
         this.setState({
           overallFrameNumber: 0
@@ -142,12 +104,9 @@ class Preview extends React.Component {
           currentRoles
         })
       }
-
       window.requestAnimationFrame(this.showNextFrame.bind(this));
     }
   }
-
-
 }
 
 module.exports = Preview;

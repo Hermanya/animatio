@@ -1,11 +1,17 @@
 /* material-ui */
 @import "node_modules/material-ui/src/less/scaffolding.less";
+@import "node_modules/mdi/css/materialdesignicons.css";
 
 //Define a custom less file to override any variables defined in scaffolding.less
 @import "custom-overrides.less";
 
 @import "node_modules/material-ui/src/less/components.less";
+
+@margin: 16px;
+
 @import "pose.less";
+@import "scene-editor.less";
+@import "pose-editor.less";
 
 .no-highlighting {
     -webkit-touch-callout: none;
@@ -15,53 +21,6 @@
     -ms-user-select: none;
     user-select: none;
 }
-
-
-@margin: 16px;
-
-.pose-editor-button {
-  margin: @margin;
-  float: right;
-}
-
-#pose-editor {
-  background-color: #eee;
-  canvas {
-    background-color: white;
-  }
-}
-
-#preview {
-    position: relative;
-    display: inline-block;
-    background-color: white;
-    #play {
-      position: absolute;
-      top: @margin;
-      right: @margin;
-    }
-    .mui-input {
-      position: absolute;
-      bottom: 0px;
-      width: 100%;
-      margin-bottom: 0 !important;
-    }
-}
-
-
-
-#complete {
-  position: fixed;
-  right: @margin;
-  top: @margin;
-}
-
-#discard {
-  position: fixed;
-  left: @margin;
-  top: @margin;
-}
-
 
 #page {
     max-width: 900px;
@@ -75,17 +34,6 @@
 
 canvas {
   display: block;
-}
-
-#frames {
-  padding: @margin;
-  .frame {
-    float: left;
-  }
-  #push-frame-container {
-    float: left;
-    padding: 33px 53px;
-  }
 }
 
 .clearfix:before{

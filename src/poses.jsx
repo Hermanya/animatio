@@ -28,7 +28,7 @@ class Poses extends React.Component {
 
       return (
           <FlatButton key={index} onClick={this.selectRole.bind(this, role)} draggable="true" primary={role === this.props.selectedRole}>
-            [<FontIcon className="button-icon mdi mdi-account" style={{color: role.color + ' '}}/>]
+            [<FontIcon className="button-icon mdi mdi-account" style={{color: role.color}}/>]
           </FlatButton>
       )
 
@@ -44,7 +44,7 @@ class Poses extends React.Component {
 
 
     return (
-      <section id="frames" className="clearfix">
+      <section id="poses" className="clearfix">
 
         <div>
             {actors}
@@ -52,8 +52,8 @@ class Poses extends React.Component {
 
         {poses}
 
-        <div id="push-frame-container">
-          <FloatingActionButton onClick={this.addPose.bind(this)} iconClassName="mdi mdi-plus" id="push-frame"/>
+        <div id="append-pose-wrapper">
+          <FloatingActionButton onClick={this.addPose.bind(this)} iconClassName="mdi mdi-plus" id="append-pose"/>
         </div>
       </section>
     )

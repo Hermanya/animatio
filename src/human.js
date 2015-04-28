@@ -1,72 +1,28 @@
 module.exports = Human
 
 function Human () {
+  var human = belly({
+    connectedTo: [
+      torso({
+        connectedTo: [
+          neck({ connectedTo: [head()] }),
+          arm({ isLeft: true }),
+          arm({ isRight: true })
+        ]
+      }),
+      leg({isLeft: true}),
+      leg({isLeft: false})
+    ],
 
-  var leftLeg = leg({isLeft: true})
-  var rightLeg = leg({isLeft: false})
-
-
-
-  var head = {
-    name: 'head',
-    width: 45,
-    length: 20,
-    rotation: 0
-  }
-
-  var neck = {
-    name: 'neck',
-    width: 30,
-    length: 65,
-    rotation: 0,
-    connectedTo: [head]
-  }
-
-  var leftArm = arm({isLeft: true})
-  var rightArm = arm({isRight: true})
-
-  var torso = {
-    name: 'torso',
-    width: 80,
-    length: 110,
-    rotation: 0,
-    connectedTo: [neck, leftArm, rightArm]
-  }
-
-  var belly = {
-    name: 'belly',
-    width: 0,
-    length: 0,
-    rotation: 0,
-    connectedTo: [torso, leftLeg, rightLeg]
-  }
-
-  var rightHip = hip({
-    rotation: 2*Math.PI/3,
-    connectedTo: [torso, leftLeg]
+    translateX: 0,
+    translateY: 250,
+    scale: 0.8,
+    transition: {
+      numberOfFrames: 30
+    }
   })
 
-  var rightThigh = thigh({
-    rotation: Math.PI/36,
-    connectedTo: [rightHip]
-  })
-
-  var rightCalf = calf({
-    rotation: 0,
-    connectedTo: [rightThigh]
-  })
-
-  var rightFoot = foot({
-    rotation: 0,
-    connectedTo: [rightCalf]
-  })
-
-  belly.translateX = 0;
-  belly.translateY = 250;
-  belly.scale = 0.8
-  belly.transition = {numberOfFrames: 30}
-
-  return belly;
+  return human;
 }
 
 
@@ -159,5 +115,38 @@ function foot (part) {
   part.name = arguments.callee.name;
   part.width = 35;
   part.length = 1;
+  return part;
+}
+
+function head (part) {
+  part = part || {}
+  part.name = arguments.callee.name;
+  part.width = 45;
+  part.length = 20;
+  part.rotation = 0;
+  return part;
+}
+
+function neck (part) {
+  part.name = arguments.callee.name;
+  part.width = 30;
+  part.length = 65;
+  part.rotation = 0;
+  return part;
+}
+
+function torso (part) {
+  part.name = arguments.callee.name;
+  part.width = 80;
+  part.length = 110;
+  part.rotation = 0;
+  return part;
+}
+
+function belly (part) {
+  part.name = arguments.callee.name;
+  part.width = 0;
+  part.length = 0;
+  part.rotation = 0;
   return part;
 }

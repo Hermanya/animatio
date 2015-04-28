@@ -1,11 +1,12 @@
 {
-  "name": "human",
+  "name": "animatio",
   "version": "1.0.0",
   "description": "silhouette theater",
   "main": "index.js",
   "dependencies": {
     "less": "^2.5.0",
     "material-ui": "^0.7.3",
+    "mdi": "~1",
     "react": "^0.13.1",
     "react-router": "^0.13.2",
     "react-tap-event-plugin": "^0.1.6",
@@ -15,18 +16,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:jsx": "node_modules/watchify/bin/cmd.js -t [ reactify --es6 --target es5 ] src/main.js -o index.js -d -v",
-    "build:less": "node_modules/less/bin/lessc src/styles/main.less style.css ",
-    "move": "npm run build:dev:angular && cp m.angular.js ~/workspace/platform/web/csr/src/main/webapp/new/js/lib/"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Hermanya/one-more-time.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Hermanya/one-more-time/issues"
-  },
-  "homepage": "https://github.com/Hermanya/one-more-time"
+    "build:jsx": "node_modules/watchify/bin/cmd.js -t [ reactify --es6 --target es5 ] src/main.js -o script.js -d -v",
+    "build:less": "node_modules/less/bin/lessc src/styles/main.less style.css "
+  }
 }

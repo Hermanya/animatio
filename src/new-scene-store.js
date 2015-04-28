@@ -1,12 +1,7 @@
 var actions = require('./new-scene-actions.js');
 var Reflux = require('./reflux.js');
 var human = require('./human.js');
-var localStorageKey = "frames";
-
-
-function clone (item) {
-  return JSON.parse(JSON.stringify(item));
-}
+var localStorageKey = 'frames';
 
 module.exports = Reflux.createStore({
   listenables: [actions],
@@ -66,20 +61,21 @@ module.exports = Reflux.createStore({
     if (newRole) {
       this.roles.push(newRole)
     }
-
-    this.updateList(this.roles);
+    this.updateList(this.roles)
   },
 
   swapRoles: function (roleId, anotherRoleId) {
-    var role = this.roles[roleId];
-    var anotherhRole = this.roles[anotherRoleId];
-    this.roles[roleId] = anotherRole;
-    this.roles[anotherRoleId] = role;
-    this.updateList(this.roles);
+    var role = this.roles[roleId]
+    var anotherhRole = this.roles[anotherRoleId]
+    this.roles[roleId] = anotherRole
+    this.roles[anotherRoleId] = role
+    this.updateList(this.roles)
   },
 
   deleteRole: function (role) {
-    this.roles = this.roles.slice(0, role.id).concat(this.roles.slice(role.id + 1));
+    this.roles = this.roles
+      .slice(0, role.id)
+      .concat(this.roles.slice(role.id + 1))
     this.updateList(this.roles);
   },
 
@@ -95,27 +91,19 @@ module.exports = Reflux.createStore({
   },
 
   updateList: function(){
-    var list = this.indexList(this.roles);
-    localStorage.setItem(localStorageKey, JSON.stringify(list));
-    this.trigger(list);
+    var list = this.indexList(this.roles)
+    localStorage.setItem(localStorageKey, JSON.stringify(list))
+    this.trigger(list)
   },
   getInitialState: function() {
-    var loadedList = localStorage.getItem(localStorageKey);
-    if (!loadedList) {
-      var pose = human();
-      var anotherPose = human();
-      anotherPose.translateX = 200;
-      setDefaults(pose)
-
-      this.roles = [];
-      this.roles.push(this.createRole())
-      this.roles.push(this.createRole())
+    var loadedList = localStorage.getItem(localStorageKey)
+    if (loadedList) {
+      this.roles = JSON.parse(loadedList)
+    } else {
+      this.roles = []
       this.roles.push(this.createRole())
       this.roles = this.indexList(this.roles)
-
-    } else {
-      this.roles = JSON.parse(loadedList);
     }
-    return this.roles;
+    return this.roles
   }
 });
