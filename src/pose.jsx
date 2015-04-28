@@ -101,7 +101,7 @@ class Pose extends React.Component {
   }
 
   delete () {
-    actions.deletePose.bind(this, this.props.role.id, this.props.data)
+    actions.deletePose(this.props.role.id, this.props.data)
   }
 
   edit (event) {
