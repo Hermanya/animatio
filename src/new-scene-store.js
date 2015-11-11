@@ -100,8 +100,9 @@ module.exports = Reflux.createStore({
     if (loadedList) {
       this.roles = JSON.parse(loadedList)
     } else {
-      this.roles = []
-      this.roles.push(this.createRole())
+  //  this.roles = []
+  //  this.roles.push(this.createRole())
+      this.roles = require('../scenes/hole.json');
       this.roles = this.indexList(this.roles)
     }
     return this.roles

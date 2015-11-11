@@ -1032,6 +1032,9 @@ hr {
   opacity: 1;
   transform: scale(1);
 }
+.mui-date-picker-day-button.mui-is-disabled {
+  color: rgba(0, 0, 0, 0.3);
+}
 .mui-date-picker-day-button.mui-is-current-date {
   color: #ffc107;
 }
@@ -1333,6 +1336,8 @@ hr {
   overflow: hidden;
   background-color: #ff6e40;
   border-radius: 50%;
+  text-align: center;
+  vertical-align: bottom;
   transform: translate3d(0, 0, 0);
 }
 .mui-floating-action-button .mui-floating-action-button-container.mui-is-disabled {
